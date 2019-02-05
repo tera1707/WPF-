@@ -21,30 +21,42 @@ namespace WpfApp1
     /// </summary>
     public partial class SimpleUserControl : UserControl
     {
-        #region Messageプロパティ
+        /// <summary>
+        /// 文字列の依存関係プロパティ
+        /// </summary>
         public string MyText
         {
-            get
-            {
-                return (string)GetValue(MyTextProperty);
-            }
-            set
-            {
-                SetValue(MyTextProperty, value);
-            }
+            get { return (string)GetValue(MyTextProperty); }
+            set { SetValue(MyTextProperty, value); }
         }
-
         public static readonly DependencyProperty MyTextProperty =
-            DependencyProperty.Register("MyText", typeof(string), typeof(SimpleUserControl), new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-        #endregion
+            DependencyProperty.Register(
+                "MyText",                               // プロパティ名
+                typeof(string),                         // プロパティの型
+                typeof(SimpleUserControl),              // プロパティを所有する型＝このクラスの名前
+                new PropertyMetadata(string.Empty));    // 初期値
 
+        /// <summary>
+        /// コマンドの依存関係プロパティ
+        /// </summary>
+        public ICommand MyCommand
+        {
+            get { return (ICommand)GetValue(MyCommandProperty); }
+            set { SetValue(MyCommandProperty, value); }
+        }
+        public static readonly DependencyProperty MyCommandProperty =
+            DependencyProperty.Register(
+                "MyCommand",                    // プロパティ名
+                typeof(ICommand),               // プロパティの型
+                typeof(SimpleUserControl),      // プロパティを所有する型＝このクラスの名前
+                new PropertyMetadata(null));    // 初期値
 
-
-
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public SimpleUserControl()
         {
             InitializeComponent();
-
         }
     }
 }

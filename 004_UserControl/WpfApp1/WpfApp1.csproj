@@ -56,9 +56,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BindingBase.cs" />
+    <Compile Include="DelegateCommand.cs" />
     <Compile Include="SimpleUserControl.xaml.cs">
       <DependentUpon>SimpleUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

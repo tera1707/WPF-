@@ -6,8 +6,11 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <StackPanel Margin="10">
+    <Grid>
         <!--  Viewで直接指定  -->
-        <local:SimpleUserControl MyText="メインウインドウ側で指定した文字列"/>
-    </StackPanel>
+        <local:SimpleUserControl 
+            MyText="メインウインドウ側で指定した文字列"
+            MyCommand="{Binding VmMyCommand}"            
+            />
+    </Grid>
 </Window>

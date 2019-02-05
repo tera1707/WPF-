@@ -5,10 +5,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WpfApp1"
              mc:Ignorable="d" 
-             d:DesignHeight="30" d:DesignWidth="150"
+             d:DesignHeight="100" d:DesignWidth="150"
              x:Name="root">
-    <Grid Background="#a000ff00">
+    <Grid Width="150" Height="100" Background="#99FF0000">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
         <!-- UserControlに「root」という名前を付けて、下でバインドするときに「ElementName=root」とすることを忘れないこと！ -->
-        <TextBlock Text="{Binding MyText, ElementName=root}" />
+        <Viewbox>
+            <TextBlock Text="{Binding MyText, ElementName=root}" Grid.Column="0"/>
+        </Viewbox>
+        
+        <!-- コマンド(=ボタン押したときの処理)も依存関係プロパティで登録できる -->
+        <Button Content="ボタン" Command="{Binding MyCommand, ElementName=root}" Grid.Column="1"/>
     </Grid>
 </UserControl>
