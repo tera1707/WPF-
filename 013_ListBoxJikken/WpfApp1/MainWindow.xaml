@@ -135,7 +135,7 @@
                         <Grid>
                             <StackPanel>
                                 <TextBlock Text="{Binding}" Foreground="Yellow"/>
-                                <TextBlock Text="{Binding}" Foreground="Red"/>
+                                <Rectangle Stroke="Red" Height="10" Width="10" Fill="Black"/>
                             </StackPanel>
                         </Grid>
                     </DataTemplate>
