@@ -1,0 +1,42 @@
+﻿<Window x:Class="WpfApp11.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp11"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="250" Width="400">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ViewBoxを使わないInkCanvas -->
+<Canvas Margin="5" Grid.Column="0">
+    <TextBlock Text="あいうえお"/>
+    <!-- 上位のCanvasと同じ大きさにする -->
+    <Border Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Canvas}}"
+            Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType=Canvas}}"
+            Background="#330000FF" BorderBrush="Red" BorderThickness="1">
+        <InkCanvas Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Canvas}}"
+            Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType=Canvas}}"
+               Background="Transparent"/>
+    </Border>
+</Canvas>
+
+        <!-- ViewBoxを使うInkCanvas -->
+        <Viewbox Grid.Column="1">
+            <!-- ViewBoxの中のCanvasには、大きさの指定が必要。 -->
+            <Canvas Width="500" Height="500">
+                <TextBlock Text="かきくけこ"/>
+                <Border Background="#330000FF" BorderBrush="Red" BorderThickness="1"
+                        Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Canvas}}"
+                        Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType=Canvas}}">
+                    <InkCanvas Background="Transparent" ClipToBounds="True"/>
+                </Border>
+            </Canvas>
+        </Viewbox>
+        
+    </Grid>
+</Window>
