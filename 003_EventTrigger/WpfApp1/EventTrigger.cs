@@ -14,7 +14,7 @@ namespace WpfApp1
     // System.Windows.Interactivity
     // Microsoft.Expression.Interactions
     // ※Ver4.5を使用すること
-    public class AlertAction : TriggerAction<Grid>
+    public class AlertAction : TriggerAction<TextBlock>
     {
         #region Messageプロパティ
         public ICommand MyCommand

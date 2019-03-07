@@ -7,12 +7,40 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid Background="Red">
-        <TextBlock>このグリッドを押すと、トリガーが発火します</TextBlock>
-        <i:Interaction.Triggers>
-            <i:EventTrigger EventName="MouseDown">
-                <local:AlertAction MyCommand="{Binding func}"/>
-            </i:EventTrigger>
-        </i:Interaction.Triggers>
+
+    <!-- 
+    参考：
+    https://qiita.com/hotelmoskva_/items/13ecc724bdad00078c16
+    
+   下記の手順が必要。
+    ・System.Windows.Interactivity.dllを参照に追加
+    ・Microsoft.Expression.Interactionsを参照に追加
+    ・xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"を上に追加
+    -->
+
+    <Grid ShowGridLines="True">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <!-- 自作クラス版 -->
+        <TextBlock Grid.Row="0">このグリッドを押すと、トリガーが発火します
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDown">
+                    <!-- 「AlertAction」クラスの継承元が「public class AlertAction : TriggerAction<TextBlock>」でないといけない。<>の中がほかのControlクラスになってるとエラーになる-->
+                    <local:AlertAction MyCommand="{Binding func}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBlock>
+
+        <!-- 簡易版 -->
+        <TextBlock Grid.Row="1">このグリッドを押すと、トリガーが発火します2
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDown">
+                    <i:InvokeCommandAction Command="{Binding func}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBlock>
     </Grid>
 </Window>
