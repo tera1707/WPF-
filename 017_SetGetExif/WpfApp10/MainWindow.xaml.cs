@@ -43,7 +43,8 @@ namespace WpfApp10
         {
             InitializeComponent();
 
-            tb_FileName.Text = @"C:\Users\masa\Desktop\IMG_5050.JPG";
+            tb_FileName.Text = @"C:\Users\masa\Desktop\実験\元ファイル.JPG"; 
+            tb_FileName2.Text = @"C:\Users\masa\Desktop\実験\書き込むファイル.jpg"; 
         }
 
         /// <summary>
@@ -187,15 +188,91 @@ namespace WpfApp10
             // その時は、「読み込み位置の指定(クエリ)の実験」で行ったMetadataの列挙のところで
             // 出力される型を確認する。(画像ファイルによって、型が異なる？)
 
-            var GPSLatitudeRef = metadata.GetQuery("/app1/ifd/gps/subifd:{ushort=1}");  // 北緯or南緯
-            var GPSLatitude = metadata.GetQuery("/app1/ifd/gps/subifd:{ushort=2}");     // 緯度
-            var GPSLongitudeRef = metadata.GetQuery("/app1/ifd/gps/{ushort=3}");        // 東経or西経
-            var GPSLongitude = metadata.GetQuery("/app1/ifd/gps/{ushort=4}");           // 経度
+            // varの型が実際何かは、デバッグ実行して、この下でとめて、ウォッチの「種類」欄で帰ってきた値の型を見る。
+
+            GPSLatitudeRef = (string)metadata.GetQuery("/app1/ifd/gps/subifd:{ushort=1}");  // 北緯or南緯
+            GPSLatitude = (ulong[])metadata.GetQuery("/app1/ifd/gps/subifd:{ushort=2}");     // 緯度
+            GPSLongitudeRef = (string)metadata.GetQuery("/app1/ifd/gps/{ushort=3}");        // 東経or西経
+            GPSLongitude = (ulong[])metadata.GetQuery("/app1/ifd/gps/{ushort=4}");           // 経度
+            //var GPSLatitudeRef = metadata.GetQuery("/app1/ifd/gps/subifd:{ushort=1}");  // 北緯or南緯
+            //var GPSLatitude = metadata.GetQuery("/app1/ifd/gps/subifd:{ushort=2}");     // 緯度
+            //var GPSLongitudeRef = metadata.GetQuery("/app1/ifd/gps/{ushort=3}");        // 東経or西経
+            //var GPSLongitude = metadata.GetQuery("/app1/ifd/gps/{ushort=4}");           // 経度
 
             var Maker = metadata.GetQuery("/app1/ifd/{ushort=271}");                    // メーカー名
             var Model = metadata.GetQuery("/app1/ifd/{ushort=272}");                    // モデル名
 
             var MakerExif = metadata.GetQuery("/app1/ifd/exif/{ushort=34864}");         // Exifバージョン
+        }
+
+        string GPSLatitudeRef;
+        ulong[] GPSLatitude;
+        string GPSLongitudeRef;
+        ulong[] GPSLongitude;
+               
+        /// <summary>
+        /// データを書き込むファイルを開くボタン
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.FilterIndex = 1;
+            openFileDialog.Filter = "Jpeg ファイル(.jpg)|*.jpg|All Files (*.*)|*.*";
+            bool? result = openFileDialog.ShowDialog();
+
+            if (result != false)
+            {
+                tb_FileName2.Text = openFileDialog.FileName;
+                var uri = new Uri(tb_FileName2.Text, UriKind.Absolute);
+                var image = (new BitmapImage(uri).Clone());
+                //MyImage2.Source = image;
+            }
+        }
+
+        /// <summary>
+        /// 書き込みボタン
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            if (GPSLatitudeRef == null)
+            {
+                MessageBox.Show("読み込んでから実行してください");
+                return;
+            }
+
+            // ファイル読みこみ
+            MemoryStream data = new MemoryStream(File.ReadAllBytes(tb_FileName2.Text));
+            WriteableBitmap image = new WriteableBitmap(BitmapFrame.Create(data));
+            data.Close();
+
+            // metaデータを準備
+            var metadata = new BitmapMetadata("jpg");
+            metadata.SetQuery("/app1/ifd/gps/subifd:{ushort=1}", GPSLatitudeRef);
+            metadata.SetQuery("/app1/ifd/gps/subifd:{ushort=2}", GPSLatitude);
+            metadata.SetQuery("/app1/ifd/gps/subifd:{ushort=3}", GPSLongitudeRef);
+            metadata.SetQuery("/app1/ifd/gps/subifd:{ushort=4}", GPSLongitude);
+            metadata.SetQuery("/app1/ifd/{ushort=271}", "入れたメーカー名");
+            metadata.SetQuery("/app1/ifd/{ushort=272}", "いれたモデル名");
+
+            // ファイルに書き込み
+            using (FileStream stream = new FileStream(tb_FileName2.Text, FileMode.Open))
+            {
+                var enc = new JpegBitmapEncoder()
+                {
+                    FlipHorizontal = false,
+                    FlipVertical = false,
+                    QualityLevel = 80,
+                    Rotation = Rotation.Rotate0
+                };
+
+                var frame = BitmapFrame.Create(image, null, metadata, null);
+                enc.Frames.Add(frame);
+                enc.Save(stream);
+            }
         }
     }
 }
