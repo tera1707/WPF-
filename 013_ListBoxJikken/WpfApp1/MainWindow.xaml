@@ -17,6 +17,8 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
+        <!--参考ページ：http://grabacr.net/archives/1240-->        
+        
         <!-- ******************** -->
         <!-- 標準のリストボックス -->
         <!-- ******************** -->
@@ -114,32 +116,67 @@
                 ItemsSource="{Binding ListBoxData4}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 >
+
+                <!-- ItemsControl.Templateの設定 -->
+                <!-- 主に Border コントロール等で全体の枠線や背景色の設定を行う -->
+                <ListBox.Template>
+                    <ControlTemplate TargetType="ItemsControl">
+                        <Border BorderThickness="5" BorderBrush="Black" Background="Azure">
+                            <ItemsPresenter Margin="10" />
+                        </Border>
+                    </ControlTemplate>
+                </ListBox.Template>
+
+                <!-- ItemsControl.ItemsPanel -->
+                <!-- コレクション項目をどのようにレイアウトするか(リストの並び方をどうするか)を決定する -->
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
 
-                <ListBox.ItemContainerStyle>
-                    <!-- ItemContainerStyleとItemTemplateの両方で同じプロパティを設定すると -->
-                    <!-- ItemTemplateが勝つっぽい -->
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Foreground" Value="Red" />
-                        <Setter Property="FontSize" Value="15" />
-                        <Setter Property="Background" Value="Aqua" />
-                    </Style>
-                </ListBox.ItemContainerStyle>
-
+                <!-- ItemsControl.ItemTemplateを設定 -->
+                <!-- 各項目のデータ オブジェクトをどのように表示するかを決定する(リストの中身をつくる) -->
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
                             <StackPanel>
-                                <TextBlock Text="{Binding}" Foreground="Yellow"/>
-                                <Rectangle Stroke="Red" Height="10" Width="10" Fill="Black"/>
+                                <TextBlock Text="{Binding}" Foreground="Yellow" HorizontalAlignment="Center"/>
+                                <Rectangle Stroke="Red" Height="10" Width="30" Fill="Black" Margin="5"/>
                             </StackPanel>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
+
+                <!-- ListBox.ItemContainerStyleを設定 -->
+                <!--項目にマウスが乗ったときに色を変える、項目が選択されたときに色を変える、といった動作を決定する-->
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Foreground" Value="Red" />
+                        <Setter Property="FontSize" Value="15" />
+                        <Setter Property="Background" Value="Blue" />
+
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ContentControl}">
+                                    <Border Background="{TemplateBinding Background}">
+                                        <ContentPresenter />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="Plum" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="LightGray" />
+                            </Trigger>
+                        </Style.Triggers>
+                        
+                    </Style>
+                </ListBox.ItemContainerStyle>
+
             </ListBox>
 
             <Button
@@ -148,4 +185,8 @@
                 Command="{Binding ListBoxButtonCommand4}"/>
         </Grid>
     </Grid>
+
+
+    <!--参考ページ：http://grabacr.net/archives/1240-->
+    
 </Window>
