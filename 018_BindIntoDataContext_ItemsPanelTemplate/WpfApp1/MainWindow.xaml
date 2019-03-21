@@ -5,29 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" >
+        Title="MainWindow" Height="Auto" Width="Auto" >
     <Window.DataContext>
         <local:ViewModel />
     </Window.DataContext>
     
     <Grid Background="#33990000" Name="MainGrid">
-        <Viewbox>
-            <ItemsControl ItemsSource="{Binding Pl}" Width="600" Height="600">
-                <ItemsControl.Template>
-                    <ControlTemplate TargetType="ItemsControl">
-                        <!-- このBorderのThicknessに、ViewModelのプロパティをバインドする -->
-                        <Border BorderThickness="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.MyThickness}" BorderBrush="Black" Background="Azure">
-                            <ItemsPresenter Margin="10" />
-                        </Border>
-                    </ControlTemplate>
-                </ItemsControl.Template>
+        <ItemsControl ItemsSource="{Binding Pl}" Width="Auto" Height="Auto">
+            <ItemsControl.Template>
+                <ControlTemplate TargetType="ItemsControl">
+                    <ItemsPresenter Margin="10" />
+                </ControlTemplate>
+            </ItemsControl.Template>
 
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Grid />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </Viewbox>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <!-- ここに、Gridを指定する。-->
+                    <StackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl> 
     </Grid>
 </Window>
