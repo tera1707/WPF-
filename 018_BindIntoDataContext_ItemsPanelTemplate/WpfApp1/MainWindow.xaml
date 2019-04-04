@@ -5,25 +5,48 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="Auto" Width="Auto" >
+        Title="MainWindow" Height="Auto" Width="Auto"
+        Name="Root">
     <Window.DataContext>
         <local:ViewModel />
     </Window.DataContext>
-    
+
     <Grid Background="#33990000" Name="MainGrid">
-        <ItemsControl ItemsSource="{Binding Pl}" Width="Auto" Height="Auto">
+        <ItemsControl Width="Auto" Height="Auto">
             <ItemsControl.Template>
                 <ControlTemplate TargetType="ItemsControl">
-                    <ItemsPresenter Margin="10" />
+                    <!-- このBorderのThicknessに、ViewModelのプロパティをバインドする -->
+
+                    <!-- OKな書き方①：自分の親をたどりGridまで行ったらそのDataContext(=VM)のプロパティを見る -->
+                    <Border BorderBrush="Green"
+                            BorderThickness="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.MyThickness}">
+
+                    <!-- OKな書き方②：一番上の親(Window)のDataContext(VM)の中のプロパティにバインドする -->
+                    <!--<Border BorderBrush="Green"
+                        BorderThickness="{Binding Path=DataContext.MyThickness, ElementName=Root}">-->
+
+                    <!-- OKな書き方③：DataContextにMyThicknessがあればそれをBinding、なければItemsControlの選択項目(自分に該当する項目)のMyThicknessをBinding -->
+                    <!-- 今回の場合、DataContextにMyThicknessがあってItemsControlにないので、VMにバインドされてる -->
+                    <!--<Border BorderBrush="Green"
+                        BorderThickness="{Binding Path=MyThickness}">-->
+                        
+                    <!-- NGな書き方：Root=Windowで、その中のプロパティにバインド、とすると、VMのプロパティではなくコードビハインドにあるプロパティ、になってしまう。-->
+                    <!-- 逆に、コードビハインドに書いたプロパティにバインドするのであれば、これでOK -->
+                    <!--<Border BorderBrush="Green"
+                        BorderThickness="{Binding Path=MyThickness, ElementName=Root}">-->
+                    
+                        <ItemsPresenter />
+                    </Border>
+
                 </ControlTemplate>
             </ItemsControl.Template>
 
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <!-- ここに、Gridを指定する。-->
-                    <StackPanel />
+                    <Canvas />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
-        </ItemsControl> 
+        </ItemsControl>
     </Grid>
 </Window>
