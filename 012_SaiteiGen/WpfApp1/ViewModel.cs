@@ -7,9 +7,14 @@ using System.Windows;
 
 namespace WpfApp1
 {
-    class ViewModel
+    class ViewModel : BindingBase
     {
-        public string VmMyText { get; set; } = "あいうえお";
+        public string VmMyText
+        {
+            get { return _vmMyText; }
+            set { _vmMyText = value; OnPropertyChanged(nameof(VmMyText)); }
+        }
+        public string _vmMyText = "あいうえお";
 
         public DelegateCommand VmMyCommand { get; private set; }
 
@@ -19,8 +24,7 @@ namespace WpfApp1
             VmMyCommand = new DelegateCommand(
                 () =>
                 {
-                    // ボタンをおしたときに行う処理
-                    MessageBox.Show("aaaa");
+                    VmMyText = "１２３４５";
                 },
                 () =>
                 {
