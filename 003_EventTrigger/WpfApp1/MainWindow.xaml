@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
@@ -38,7 +39,10 @@
         <TextBlock Grid.Row="1">このグリッドを押すと、トリガーが発火します2
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDown">
+                    <!-- ViewModelのメソッドの呼び方１ -->
                     <i:InvokeCommandAction Command="{Binding func}"/>
+                    <!-- ViewModelのメソッドの呼び方２ -->
+                    <ei:CallMethodAction TargetObject="{Binding}" MethodName="EventFunc"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBlock>

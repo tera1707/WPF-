@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interactivity;
 
 namespace WpfApp1
 {
@@ -17,14 +10,16 @@ namespace WpfApp1
         public ViewModel()
         {
             func = new DelegateCommand(
-                () => {
-                    MessageBox.Show("トリガー発火");
-                    return;
-                },
                 () =>
                 {
-                    return true;
+                    MessageBox.Show("トリガー発火");
+                    return;
                 });
+        }
+
+        public void EventFunc()
+        {
+            MessageBox.Show("CallMethodAction でトリガー発火");
         }
     }
 }

@@ -14,7 +14,8 @@ namespace WpfApp1
 
         public bool CanExecute(object parameter)
         {
-            return canExecute();
+            if (canExecute != null) return canExecute();
+            else return true;
         }
 
         public event System.EventHandler CanExecuteChanged
