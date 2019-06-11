@@ -20,7 +20,7 @@ int main()
 	_Init();
 
 	//合計処理
-	l_Result = _Add(300, 500);
+	l_Result = _Add(400, 500);
 
 	//後処理
 	_Finalize();
@@ -48,7 +48,8 @@ long _Init(void)
 	}
 
 	//Instanceの生成
-	h_result = CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER, IID_IUnknown, (void**)&pIUnk);
+	//h_result = CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER, IID_IUnknown, (void**)&pIUnk);
+	h_result = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IUnknown, (void**)&pIUnk);
 	if (FAILED(h_result))
 	{
 		return -2;

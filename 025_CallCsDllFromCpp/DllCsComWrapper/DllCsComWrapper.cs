@@ -1,6 +1,7 @@
 ﻿using DllCs;
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace DllCsComWrapper
 {
@@ -12,6 +13,7 @@ namespace DllCsComWrapper
         public Int32 Add(Int32 param1, Int32 param2)
         {
             int ret = DllCsClass.Add(param1, param2);
+            Thread.Sleep(1000);
             return (Int32)ret;
         }
     }
