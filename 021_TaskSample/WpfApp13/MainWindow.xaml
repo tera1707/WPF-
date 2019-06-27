@@ -8,10 +8,6 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Button Content="Button1" HorizontalAlignment="Left" Height="134" Margin="23,27,0,0" VerticalAlignment="Top" Width="164" Click="Button_Click"/>
-        <Button Content="Button2" HorizontalAlignment="Left" Height="134" Margin="221,27,0,0" VerticalAlignment="Top" Width="164" Click="Button_Click_1"/>
-        <Button Content="Button3" HorizontalAlignment="Left" Height="134" Margin="425,27,0,0" VerticalAlignment="Top" Width="164" Click="Button_Click_2"/>
-        <Button Content="Button4" HorizontalAlignment="Left" Height="134" Margin="23,214,0,0" VerticalAlignment="Top" Width="164" Click="Button_Click_3"/>
-        <Button Content="Button5" HorizontalAlignment="Left" Height="134" Margin="221,214,0,0" VerticalAlignment="Top" Width="164" Click="Button_Click_4"/>
 
     </Grid>
 </Window>
