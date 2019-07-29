@@ -9,6 +9,7 @@ namespace ConsoleApp10
 {
     class Program
     {
+        // https://github.com/Fody/Costura
         static void Main(string[] args)
         {
             Console.WriteLine("Start..");
