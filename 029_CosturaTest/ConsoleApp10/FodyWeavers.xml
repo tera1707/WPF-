@@ -1,0 +1,13 @@
+﻿<Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
+  <Costura>
+    <IncludeAssemblies >
+      ClassLibrary1
+    </IncludeAssemblies >
+    <Unmanaged32Assemblies>
+      Dll1_Win32
+    </Unmanaged32Assemblies>
+    <Unmanaged64Assemblies>
+      Dll1_x64
+    </Unmanaged64Assemblies>
+  </Costura>
+</Weavers>
