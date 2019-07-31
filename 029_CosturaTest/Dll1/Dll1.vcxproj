@@ -74,13 +74,13 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)_$(Platform)</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)_$(Platform)</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -103,6 +103,16 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
     </Link>
+    <PostBuildEvent>
+      <Command>if $(Platform) == Win32 (
+xcopy /Y /I $(SolutionDir)Dll1\bin\$(Platform)\$(Configuration)\*.dll $(SolutionDir)ConsoleApp10\costura32\
+xcopy /Y /I $(SolutionDir)Dll1\bin\$(Platform)\$(Configuration)\*.pdb $(SolutionDir)ConsoleApp10\costura32\
+)
+if $(Platform) == x64 (
+xcopy /Y /I $(SolutionDir)Dll1\bin\$(Platform)\$(Configuration)\*.dll $(SolutionDir)ConsoleApp10\costura64\
+xcopy /Y /I $(SolutionDir)Dll1\bin\$(Platform)\$(Configuration)\*.pdb $(SolutionDir)ConsoleApp10\costura64\
+)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -119,6 +129,16 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
     </Link>
+    <PostBuildEvent>
+      <Command>if $(Platform) == Win32 (
+xcopy /Y /I $(SolutionDir)Dll1\bin\$(Platform)\$(Configuration)\*.dll $(SolutionDir)ConsoleApp10\costura32\
+xcopy /Y /I $(SolutionDir)Dll1\bin\$(Platform)\$(Configuration)\*.pdb $(SolutionDir)ConsoleApp10\costura32\
+)
+if $(Platform) == x64 (
+xcopy /Y /I $(SolutionDir)Dll1\bin\$(Platform)\$(Configuration)\*.dll $(SolutionDir)ConsoleApp10\costura64\
+xcopy /Y /I $(SolutionDir)Dll1\bin\$(Platform)\$(Configuration)\*.pdb $(SolutionDir)ConsoleApp10\costura64\
+)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

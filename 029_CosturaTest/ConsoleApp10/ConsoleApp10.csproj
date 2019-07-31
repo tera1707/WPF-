@@ -67,12 +67,8 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\Dll1\bin\Win32\Debug\Dll1_Win32.dll">
-      <Link>costura32\Dll1.dll</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Dll1\bin\x64\Debug\Dll1_x64.dll">
-      <Link>costura64\Dll1.dll</Link>
-    </EmbeddedResource>
+    <EmbeddedResource Include="costura32\Dll1.dll" />
+    <EmbeddedResource Include="costura64\Dll1.dll" />
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

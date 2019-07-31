@@ -4,10 +4,10 @@
       ClassLibrary1
     </IncludeAssemblies >
     <Unmanaged32Assemblies>
-      Dll1_Win32
+      Dll1
     </Unmanaged32Assemblies>
     <Unmanaged64Assemblies>
-      Dll1_x64
+      Dll1
     </Unmanaged64Assemblies>
   </Costura>
 </Weavers>
