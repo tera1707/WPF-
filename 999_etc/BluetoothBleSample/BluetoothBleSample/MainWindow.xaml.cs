@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,8 @@ using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
+using Windows.Storage.Streams;
+using OxyPlot;
 
 namespace BluetoothBleSample
 {
@@ -25,28 +28,22 @@ namespace BluetoothBleSample
     /// </summary>
     public partial class MainWindow : Window
     {
-        private BluetoothLEAdvertisementWatcher watcher;
+        public List<DataPoint> DataList { get; }
 
-        private GattDeviceService GattDeviceService { get; set; }
-
-        private GattCharacteristic GattCharacteristic { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
 
-            //this.watcher = new BluetoothLEAdvertisementWatcher();
 
-
-
-            //// rssi >= -60のとき受信開始するっぽい
-            //this.watcher.SignalStrengthFilter.InRangeThresholdInDBm = -60;
-            //// rssi <= -65が2秒続いたら受信終わるっぽい
-            //this.watcher.SignalStrengthFilter.OutOfRangeThresholdInDBm = -65;
-            //this.watcher.SignalStrengthFilter.OutOfRangeTimeout = TimeSpan.FromMilliseconds(2000);
-            //this.watcher.Received += this.Watcher_Received;
-
-            //this.watcher.Start();
+            DataList = new List<DataPoint>();
+            //{
+            //    {new DataPoint(0, 0)},
+            //    {new DataPoint(2, 4)},
+            //    {new DataPoint(5, 8)},
+            //    {new DataPoint(8, 3)},
+            //    {new DataPoint(12, 5)},
+            //};
 
             StartWatcher();
         }
@@ -59,7 +56,7 @@ namespace BluetoothBleSample
                 if (md != null)
                 {
                     // ManufactureDataをもとにCompanyIDとったりできる
-                    
+
                 }
 
                 this.Dispatcher.Invoke(()=>
@@ -98,33 +95,142 @@ namespace BluetoothBleSample
         // データ取得
         private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            if (EnvSensorDeviceInformation == null || EnvSensorDeviceInformation.Pairing.IsPaired == false) return;
-
-            //// SensorTagを取得
-            //var selector = GattDeviceService.GetDeviceSelectorFromUuid(new Guid("00001800-0000-1000-8000-00805f9b34fb"));
-            var selector = GattDeviceService.GetDeviceSelectorFromUuid(new Guid("0C4C3000-7700-46F4-AA96-D5E974E32A54"));
-            var devices = await DeviceInformation.FindAllAsync(selector);
-            var deviceInformation = devices.FirstOrDefault();
-            if (deviceInformation == null)
+            //var t = Task.Run(async ()=>
             {
-                MessageBox.Show("not found");
-                return;
+                //while (true)
+                {
+
+                    if (EnvSensorDeviceInformation == null || EnvSensorDeviceInformation.Pairing.IsPaired == false) return;
+
+                    // デバイスを、ペアリングしている対象の機器のIDからとってくる
+                    device = await BluetoothLEDevice.FromIdAsync(EnvSensorDeviceInformation.Id);
+
+                    // その機器のサービスをとる(これいらんかも)
+                    GattDeviceServicesResult result = await device.GetGattServicesAsync();
+
+                    if (result.Status == GattCommunicationStatus.Success)
+                    {
+                        // その機器のサービスをとる
+                        services = await device.GetGattServicesForUuidAsync(new Guid("0C4C3000-7700-46F4-AA96-D5E974E32A54"));
+                        // そのサービスから、目的のキャラクタリスティックのコレクションをとる
+                        characteristics = await services.Services[0].GetCharacteristicsForUuidAsync(new Guid("0C4C3001-7700-46F4-AA96-D5E974E32A54"));
+                        // コレクションには(UUID指定してるから)1個しかないはずなので、それを使う
+                        characteristic = characteristics.Characteristics.FirstOrDefault();
+
+                        if (characteristic != null)
+                        {
+
+                            GattCommunicationStatus status = GattCommunicationStatus.Unreachable;
+                            var cccdValue = GattClientCharacteristicConfigurationDescriptorValue.Notify;
+                            status = await characteristic.WriteClientCharacteristicConfigurationDescriptorAsync(cccdValue);
+                            if (status == GattCommunicationStatus.Success)
+                            {
+                                characteristic.ValueChanged += ((s, a) =>
+                                {
+                                    //GattReadResult r = await c.ReadValueAsync();
+                                    //if (r.Status == GattCommunicationStatus.Success)
+                                    {
+                                        var reader = DataReader.FromBuffer(a.CharacteristicValue);
+                                        byte[] input = new byte[reader.UnconsumedBufferLength];
+                                        reader.ReadBytes(input);
+                                        // Utilize the data as needed
+
+                                        // データを整形
+                                        double temparature = (double)(input[1] + 0x0100 * input[2]) / 100;
+                                        //var str = System.Text.Encoding.ASCII.GetString(data);
+                                        Debug.WriteLine("温度：" + temparature);
+                                        this.Dispatcher.Invoke(() =>
+                                        {
+                                            TextBlockRSSI.Text = "温度：" + temparature;
+
+                                            DataList.Add(new DataPoint(count++, temparature));
+                                            if (DataList.Count() > 1000) DataList.RemoveAt(0);
+                                            graph.InvalidatePlot();
+                                        });
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                Console.WriteLine("設定sipoai:" + status);
+                            }
+
+
+                            // 読み込みがサポートされてるか判定
+                            //if (properties.HasFlag(GattCharacteristicProperties.Read))
+                            //{
+                            //}
+                        }
+                    }
+                }
+            }//);
+        }
+
+        int count = 0;
+
+        // 温度間隔書き込み
+        private async void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+
+            // デバイスを、ペアリングしている対象の機器のIDからとってくる
+            device = await BluetoothLEDevice.FromIdAsync(EnvSensorDeviceInformation.Id);
+
+            // その機器のサービスをとる(これいらんかも)
+            GattDeviceServicesResult result = await device.GetGattServicesAsync();
+
+            if (result.Status == GattCommunicationStatus.Success)
+            {
+                // その機器のサービスをとる->3010:SetingService
+                services = await device.GetGattServicesForUuidAsync(new Guid("0C4C3010-7700-46F4-AA96-D5E974E32A54"));
+                // そのサービスから、目的のキャラクタリスティックのコレクションをとる（測定間隔）
+                characteristics = await services.Services[0].GetCharacteristicsForUuidAsync(new Guid("0C4C3011-7700-46F4-AA96-D5E974E32A54"));
+                // コレクションには(UUID指定してるから)1個しかないはずなので、それを使う
+                characteristic = characteristics.Characteristics.FirstOrDefault();
+
+                if (characteristic != null)
+                {
+                    GattCharacteristicProperties properties = characteristic.CharacteristicProperties;
+
+                    // 書き込みがサポートされてるか判定
+                    if (properties.HasFlag(GattCharacteristicProperties.Write))
+                    {
+                        var writer = new DataWriter();
+                        // WriteByte used for simplicity. Other common functions - WriteInt16 and WriteSingle
+                        writer.ByteOrder = ByteOrder.LittleEndian;
+                        writer.WriteInt16(5);
+                        GattCommunicationStatus r = await characteristic.WriteValueAsync(writer.DetachBuffer());
+                        if (r == GattCommunicationStatus.Success)
+                        {
+                            // Successfully wrote to device
+                            Console.WriteLine("設定成功");
+                        }
+                    }
+
+                    // 読み込みがサポートされてるか判定
+                    if (properties.HasFlag(GattCharacteristicProperties.Read))
+                    {
+                        GattReadResult r = await characteristic.ReadValueAsync();
+                        if (r.Status == GattCommunicationStatus.Success)
+                        {
+                            var reader = DataReader.FromBuffer(r.Value);
+                            byte[] input = new byte[reader.UnconsumedBufferLength];
+                            reader.ReadBytes(input);
+                            // Utilize the data as needed
+
+                            // データを整形
+                            var interval = (int)(input[0] + 0x0100 * input[1]);
+                            //var str = System.Text.Encoding.ASCII.GetString(data);
+                            Debug.WriteLine("温度監視間隔：" + interval + " 秒");
+                        }
+                    }
+                }
             }
-            device = await BluetoothLEDevice.FromIdAsync(deviceInformation.Id);
-            //MessageBox.Show($"found {deviceInformation.Id}");
-            services = await device.GetGattServicesForUuidAsync(new Guid("0C4C3000-7700-46F4-AA96-D5E974E32A54"));
-            characteristics = await services.Services[0].GetCharacteristicsForUuidAsync(new Guid("0C4C3001-7700-46F4-AA96-D5E974E32A54"));
-
-            characteristics.Characteristics[0].ValueChanged += characteristicChanged;
-
-            await characteristics.Characteristics[0].WriteClientCharacteristicConfigurationDescriptorAsync(
-                GattClientCharacteristicConfigurationDescriptorValue.Notify
-            );
         }
 
         private BluetoothLEDevice device;
         private GattDeviceServicesResult services;
         private GattCharacteristicsResult characteristics;
+        private GattCharacteristic characteristic;
 
         void characteristicChanged(GattCharacteristic sender, GattValueChangedEventArgs eventArgs)
         {
@@ -188,7 +294,7 @@ namespace BluetoothBleSample
             //string selector = "(" + "System.Devices.Aep.ProtocolId:=\"{bb7bb05e-5972-42b5-94fc-76eaa7084d49}\"" + ")" + " AND (System.Devices.Aep.CanPair:=System.StructuredQueryType.Boolean#True OR System.Devices.Aep.IsPaired:=System.StructuredQueryType.Boolean#True)";
             string selector = "(" + "System.Devices.Aep.ProtocolId:=\"{bb7bb05e-5972-42b5-94fc-76eaa7084d49}\"" + ")";
             string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected", "System.Devices.Aep.IsPaired" };
-            
+
             // Kind is specified in the selector info
             deviceWatcher = DeviceInformation.CreateWatcher(
                 selector,
@@ -212,27 +318,37 @@ namespace BluetoothBleSample
 
         private async void Watcher_DeviceAdded(DeviceWatcher sender, DeviceInformation deviceInfo)
         {
-            Console.WriteLine("Watcher_DeviceAdded : " + deviceInfo.Name + "  " + deviceInfo.Kind + "  " + deviceInfo.Pairing.IsPaired);
 
             if (deviceInfo.Name == "EnvSensor-BL01")
             {
                 EnvSensorDeviceInformation = deviceInfo;
+                Console.WriteLine("Watcher_DeviceAdded : " + deviceInfo.Name + "  " + deviceInfo.Kind + "  " + deviceInfo.Pairing.IsPaired);
+            }
+            if (deviceInfo.Name == "Env")
+            {
+                EnvSensorDeviceInformation = deviceInfo;
+                Console.WriteLine("Watcher_DeviceAdded : " + deviceInfo.Name + "  " + deviceInfo.Kind + "  " + deviceInfo.Pairing.IsPaired);
             }
         }
 
         private async void Watcher_DeviceUpdated(DeviceWatcher sender, DeviceInformationUpdate deviceInfoUpdate)
         {
-            Console.WriteLine("Watcher_DeviceUpdated");
+            //Console.WriteLine("Watcher_DeviceUpdated");
             if (deviceInfoUpdate.Id == EnvSensorDeviceInformation.Id)
             {
                 EnvSensorDeviceInformation.Update(deviceInfoUpdate);
+                Console.WriteLine("Watcher_DeviceUpdated : " + EnvSensorDeviceInformation.Name + "  " + EnvSensorDeviceInformation.Kind + "  " + EnvSensorDeviceInformation.Pairing.IsPaired);
             }
         }
 
         private async void Watcher_DeviceRemoved(DeviceWatcher sender, DeviceInformationUpdate deviceInfoUpdate)
         {
-            Console.WriteLine("Watcher_DeviceRemoved");
-
+            //Console.WriteLine("Watcher_DeviceUpdated");
+            if (deviceInfoUpdate.Id == EnvSensorDeviceInformation.Id)
+            {
+                EnvSensorDeviceInformation.Update(deviceInfoUpdate);
+                Console.WriteLine("Watcher_DeviceRemoved : " + EnvSensorDeviceInformation.Name + "  " + EnvSensorDeviceInformation.Kind + "  " + EnvSensorDeviceInformation.Pairing.IsPaired);
+            }
         }
 
         private async void Watcher_EnumerationCompleted(DeviceWatcher sender, object obj)

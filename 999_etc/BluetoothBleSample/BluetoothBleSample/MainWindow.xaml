@@ -4,16 +4,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BluetoothBleSample"
+        xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
 
-        <TextBox Name="TextBlockRSSI" Margin="35,25,23,332"
+        <TextBox Name="TextBlockRSSI" Margin="35,25,23,287"
                    HorizontalAlignment="Center"
-                   VerticalAlignment="Center" Width="734" Height="62" />
+                   VerticalAlignment="Center" TextAlignment="Center" Width="734" Height="107" Text="00.00" FontSize="80"/>
+
+        <oxy:Plot Name="graph" Margin="35,137,23,50">
+            <oxy:Plot.Series >
+                <oxy:LineSeries ItemsSource="{Binding DataList, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
+            </oxy:Plot.Series>
+        </oxy:Plot>
 
 
-        <Button Margin="100,275,100,100" Click="Button_Click" Content="ペアリング"/>
-        <Button Margin="100,340,100,35" Click="Button_Click_1"  Content="データ"/>
+        <Button Margin="35,385,597,10" Click="Button_Click" Content="ペアリング"/>
+        <Button Margin="222,385,434,10" Click="Button_Click_1"  Content="データ"/>
     </Grid>
 </Window>
