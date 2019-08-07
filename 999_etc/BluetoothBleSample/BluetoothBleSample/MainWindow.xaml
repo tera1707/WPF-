@@ -7,20 +7,62 @@
         xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="35"/>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
 
-        <TextBox Name="TextBlockRSSI" Margin="35,25,23,287"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center" TextAlignment="Center" Width="734" Height="107" Text="00.00" FontSize="80"/>
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="温度："/>
+            <TextBlock Name="tbTemparature" Grid.Column="1" Text="{Binding Temperature, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
+        </Grid>
 
-        <oxy:Plot Name="graph" Margin="35,137,23,50">
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="湿度："/>
+            <TextBlock Name="tbHumidity" Grid.Column="1" Text="{Binding Temperature, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="照度："/>
+            <TextBlock Name="tbIlluminance" Grid.Column="1" Text="{Binding Temperature, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="騒音："/>
+            <TextBlock Name="tbNoise" Grid.Column="1" Text="{Binding Temperature, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
+        </Grid>
+
+        <oxy:Plot Name="graph" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
             <oxy:Plot.Series >
                 <oxy:LineSeries ItemsSource="{Binding DataList, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
             </oxy:Plot.Series>
         </oxy:Plot>
-
-
-        <Button Margin="35,385,597,10" Click="Button_Click" Content="ペアリング"/>
-        <Button Margin="222,385,434,10" Click="Button_Click_1"  Content="データ"/>
     </Grid>
 </Window>

@@ -103,5 +103,11 @@
       <Version>2.0.0-unstable1035</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EnvSensorLibrary\EnvSensorLibrary.csproj">
+      <Project>{d7c95af2-4c1e-4308-9585-3263df439ad0}</Project>
+      <Name>EnvSensorLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
