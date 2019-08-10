@@ -63,5 +63,10 @@ namespace BluetoothBleSample
             // グラフ
             DataList = new List<DataPoint>();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

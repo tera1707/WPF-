@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
@@ -58,10 +59,19 @@ namespace EnvSensorLibrary
         /// </summary>
         public void StartCommunicationWithEnvSensorBL01()
         {
-            // Bluetooth v4（BLE）を指定
-            string selector = "(" + "System.Devices.Aep.ProtocolId:=\"{bb7bb05e-5972-42b5-94fc-76eaa7084d49}\"" + ")";
+            StartWatcher();
+        }
 
-            DeviceWatcher = DeviceInformation.CreateWatcher(selector, null, DeviceInformationKind.AssociationEndpoint);
+        private void StartWatcher()
+        {
+            // Bluetooth v4（BLE）を指定
+            //string selector = "(" + "System.Devices.Aep.ProtocolId:=\"{bb7bb05e-5972-42b5-94fc-76eaa7084d49}\"" + ")";// BLEプロトコルを持つ機器全部
+            string selector = "(" + GattDeviceService.GetDeviceSelectorFromUuid(SeosorServiceUuid) + ")";// Omronのやつだけ。(これだとペアリングしてないとでてこなくなる？)
+
+            // 第一引数：何の機器をwatchするか。指定したものだけAddedなどのハンドラで引っ掛ける。
+            // 第二引数：ほしい情報を指定する(指定したものだけ、Addedなどのハンドラの引数に乗ってくる？)
+            //DeviceWatcher = DeviceInformation.CreateWatcher(selector, null, DeviceInformationKind.AssociationEndpoint);
+            DeviceWatcher = DeviceInformation.CreateWatcher(selector);
 
             // デバイス情報更新時のハンドラを登録
             DeviceWatcher.Added += Watcher_DeviceAdded;
@@ -74,16 +84,35 @@ namespace EnvSensorLibrary
             DeviceWatcher.Start();
         }
 
+        private void StopWatcher()
+        {
+            // デバイス情報更新時のハンドラを登録
+            DeviceWatcher.Added -= Watcher_DeviceAdded;
+            DeviceWatcher.Updated -= Watcher_DeviceUpdated;
+            DeviceWatcher.Removed -= Watcher_DeviceRemoved;
+            DeviceWatcher.EnumerationCompleted -= Watcher_EnumerationCompleted;
+            DeviceWatcher.Stopped -= Watcher_Stopped;
+
+            // watcherスタート
+            if (DeviceWatcherStatus.Started == DeviceWatcher.Status ||
+                DeviceWatcherStatus.EnumerationCompleted == DeviceWatcher.Status)
+            {
+                DeviceWatcher.Stop();
+            }
+        }
+
         private async void Watcher_DeviceAdded(DeviceWatcher sender, DeviceInformation deviceInfo)
         {
 
             if (deviceInfo.Name == "EnvSensor-BL01")
             {
                 DeviceInformation = deviceInfo;
-                Console.WriteLine("Watcher_DeviceAdded : " + deviceInfo.Name + "  " + deviceInfo.Kind + "  " + deviceInfo.Pairing.IsPaired);
+                Console.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] デバイスを追加しました(Name:{deviceInfo.Name}, Kind:{deviceInfo.Kind}, IsPaired{deviceInfo.Pairing.IsPaired})");
+
+                StopWatcher();
 
                 var ret = await ConnectToServiceForLatestData();
-                Debug.WriteLine("Connect To Service : " + ret);
+                Console.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] 接続結果：{ret}");
             }
         }
 
@@ -92,7 +121,7 @@ namespace EnvSensorLibrary
             if (deviceInfoUpdate.Id == DeviceInformation.Id)
             {
                 DeviceInformation.Update(deviceInfoUpdate);
-                Console.WriteLine("Watcher_DeviceUpdated : " + DeviceInformation.Name + "  " + DeviceInformation.Kind + "  " + DeviceInformation.Pairing.IsPaired);
+                Console.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] デバイスをアップデートしました(Name:{DeviceInformation.Name}, Kind:{DeviceInformation.Kind}, IsPaired{DeviceInformation.Pairing.IsPaired})");
             }
         }
 
@@ -102,7 +131,7 @@ namespace EnvSensorLibrary
             if (deviceInfoUpdate.Id == DeviceInformation.Id)
             {
                 DeviceInformation.Update(deviceInfoUpdate);
-                Console.WriteLine("Watcher_DeviceRemoved : " + DeviceInformation.Name + "  " + DeviceInformation.Kind + "  " + DeviceInformation.Pairing.IsPaired);
+                Console.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] デバイスを削除しました(Name:{DeviceInformation.Name}, Kind:{DeviceInformation.Kind}, IsPaired{DeviceInformation.Pairing.IsPaired})");
             }
         }
 
@@ -127,41 +156,128 @@ namespace EnvSensorLibrary
             
             // その機器のサービスをとる
             var services = await Device.GetGattServicesForUuidAsync(SeosorServiceUuid);
-            // そのサービスから、目的のキャラクタリスティックのコレクションをとる
-            var characteristics = await services.Services[0].GetCharacteristicsForUuidAsync(LatestDataCharacteristicUuid);
-            // コレクションには(UUID指定してるから)1個しかないはずなので、それを使う
-            LatestDataCharacteristic = characteristics.Characteristics.FirstOrDefault();
 
-            if (LatestDataCharacteristic != null)
+            if (services != null)
             {
-                var status = GattCommunicationStatus.Unreachable;
-                status = await LatestDataCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                // そのサービスから、目的のキャラクタリスティックのコレクションをとる
+                var characteristics = await services.Services[0].GetCharacteristicsForUuidAsync(LatestDataCharacteristicUuid);
+                // コレクションには(UUID指定してるから)1個しかないはずなので、それを使う
+                LatestDataCharacteristic = characteristics.Characteristics[0];
 
-                if (status == GattCommunicationStatus.Success)
+                if (LatestDataCharacteristic != null)
                 {
-                    LatestDataCharacteristic.ValueChanged += ((s, a) =>
+                    var status = await LatestDataCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+
+                    if (status == GattCommunicationStatus.Success)
                     {
-                        var reader = DataReader.FromBuffer(a.CharacteristicValue);
-                        byte[] input = new byte[reader.UnconsumedBufferLength];
-                        reader.ReadBytes(input);
-                        // Utilize the data as needed
+                        LatestDataCharacteristic.ValueChanged += ((s, a) =>
+                        {
+                            var reader = DataReader.FromBuffer(a.CharacteristicValue);
+                            byte[] input = new byte[reader.UnconsumedBufferLength];
+                            reader.ReadBytes(input);
+                            // Utilize the data as needed
 
-                        // データを整形
-                        double t = (double)(input[1] + 0x0100 * input[2]) / 100;    // 温度
-                        double h = (double)(input[3] + 0x0100 * input[4]) / 100;    // 湿度
-                        double i = (double)(input[5] + 0x0100 * input[6]) / 100;    // 照度
-                        double n = (double)(input[11] + 0x0100 * input[12]) / 100;    // 騒音
-                        Debug.WriteLine("温度：" + t + " 湿度：" + h + " 照度：" + i + " 騒音：" + n);
+                            // データを整形
+                            double t = (double)(input[1] + 0x0100 * input[2]) / 100;    // 温度
+                            double h = (double)(input[3] + 0x0100 * input[4]) / 100;    // 湿度
+                            double i = (double)(input[5] + 0x0100 * input[6]);          // 照度
+                            double n = (double)(input[11] + 0x0100 * input[12]) / 100;  // 騒音
+                            //Debug.WriteLine("温度：" + t + " 湿度：" + h + " 照度：" + i + " 騒音：" + n);
 
-                        // ユーザーが登録したハンドラ実行
-                        LatestDataChanged?.Invoke(t, h, i, n);
-                    });
+                            // ユーザーが登録したハンドラ実行
+                            LatestDataChanged?.Invoke(t, h, i, n);
+                        });
 
-                    ret = true;
+                        ret = true;
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] ConfigurationDescriptor設定に失敗しました(status = {status})");
+                    }
                 }
+                else
+                {
+                    Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] キャラクタリスティック取得に失敗しました({LatestDataCharacteristicUuid})");
+                }
+            }
+            else
+            {
+                Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] サービス取得に失敗しました({SeosorServiceUuid})");
             }
 
             return ret;
+        }
+
+        /// <summary>
+        /// ペアリング実施
+        /// </summary>
+        /// <param name="devInfo"></param>
+        private async void DoPairing(DeviceInformation devInfo)
+        {
+            if (devInfo == null) return;
+
+            if (devInfo.Pairing.IsPaired == false)
+            {
+                DeviceInformationCustomPairing customPairing = devInfo.Pairing.Custom;
+                customPairing.PairingRequested += PairingRequestedHandler;
+                DevicePairingResult result = await customPairing.PairAsync(DevicePairingKinds.ConfirmOnly, DevicePairingProtectionLevel.Default);
+                customPairing.PairingRequested -= PairingRequestedHandler;
+                Console.WriteLine("result is : " + result.Status);
+                Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] ペアリング結果：{result.Status}");
+            }
+            else
+            {
+                Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] すでにペアリング済み");
+            }
+        }
+
+        /// <summary>
+        /// ペアリング解除実施
+        /// </summary>
+        /// <param name="devInfo"></param>
+        private async void DoUnpairing(DeviceInformation devInfo)
+        {
+            if (devInfo == null) return;
+
+            if (devInfo.Pairing.IsPaired == true)
+            {
+                var result = await devInfo.Pairing.UnpairAsync();
+                Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] ペアリング解除結果：{result.Status}");
+            }
+            else
+            {
+                Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] すでにペアリング解除済み");
+            }
+        }
+
+        /// <summary>
+        /// ペアリング要求時のハンドラ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private static void PairingRequestedHandler(DeviceInformationCustomPairing sender, DevicePairingRequestedEventArgs args)
+        {
+            switch (args.PairingKind)
+            {
+                case DevicePairingKinds.ConfirmOnly:
+                    // Windows itself will pop the confirmation dialog as part of "consent" if this is running on Desktop or Mobile
+                    // If this is an App for 'Windows IoT Core' or a Desktop and Console application
+                    // where there is no Windows Consent UX, you may want to provide your own confirmation.
+                    args.Accept();
+                    break;
+
+                case DevicePairingKinds.ProvidePin:
+                    // A PIN may be shown on the target device and the user needs to enter the matching PIN on 
+                    // this Windows device. Get a deferral so we can perform the async request to the user.
+                    var collectPinDeferral = args.GetDeferral();
+                    string pinFromUser = "952693";
+                    if (!string.IsNullOrEmpty(pinFromUser))
+                    {
+                        args.Accept(pinFromUser);
+                    }
+                    collectPinDeferral.Complete();
+                    break;
+            }
         }
     }
 }
