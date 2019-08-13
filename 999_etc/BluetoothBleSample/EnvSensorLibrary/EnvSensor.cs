@@ -11,6 +11,11 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
 using Windows.Storage.Streams;
 
+//#if WINDOWS_UWP
+//namespace EnvSensorLibraryUWP
+//#else
+//namespace EnvSensorLibrary
+//#endif
 namespace EnvSensorLibrary
 {
     /// <summary>
@@ -104,15 +109,17 @@ namespace EnvSensorLibrary
         private async void Watcher_DeviceAdded(DeviceWatcher sender, DeviceInformation deviceInfo)
         {
 
-            if (deviceInfo.Name == "EnvSensor-BL01")
+            if (deviceInfo.Name == "EnvSensor-BL01" || deviceInfo.Name.Contains(SeosorServiceUuid.ToString()))
             {
                 DeviceInformation = deviceInfo;
-                Console.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] デバイスを追加しました(Name:{deviceInfo.Name}, Kind:{deviceInfo.Kind}, IsPaired{deviceInfo.Pairing.IsPaired})");
+                //Console.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] デバイスを追加しました(Name:{deviceInfo.Name}, Kind:{deviceInfo.Kind}, IsPaired{deviceInfo.Pairing.IsPaired})");
 
                 StopWatcher();
 
+                //DoPairing(DeviceInformation);
+
                 var ret = await ConnectToServiceForLatestData();
-                Console.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] 接続結果：{ret}");
+                Console.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] 接続結果：{ret}");
             }
         }
 
@@ -121,7 +128,7 @@ namespace EnvSensorLibrary
             if (deviceInfoUpdate.Id == DeviceInformation.Id)
             {
                 DeviceInformation.Update(deviceInfoUpdate);
-                Console.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] デバイスをアップデートしました(Name:{DeviceInformation.Name}, Kind:{DeviceInformation.Kind}, IsPaired{DeviceInformation.Pairing.IsPaired})");
+                Console.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] デバイスをアップデートしました(Name:{DeviceInformation.Name}, Kind:{DeviceInformation.Kind}, IsPaired{DeviceInformation.Pairing.IsPaired})");
             }
         }
 
@@ -131,7 +138,7 @@ namespace EnvSensorLibrary
             if (deviceInfoUpdate.Id == DeviceInformation.Id)
             {
                 DeviceInformation.Update(deviceInfoUpdate);
-                Console.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] デバイスを削除しました(Name:{DeviceInformation.Name}, Kind:{DeviceInformation.Kind}, IsPaired{DeviceInformation.Pairing.IsPaired})");
+                Console.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] デバイスを削除しました(Name:{DeviceInformation.Name}, Kind:{DeviceInformation.Kind}, IsPaired{DeviceInformation.Pairing.IsPaired})");
             }
         }
 
@@ -166,46 +173,82 @@ namespace EnvSensorLibrary
 
                 if (LatestDataCharacteristic != null)
                 {
-                    var status = await LatestDataCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
 
-                    if (status == GattCommunicationStatus.Success)
+                    //if (status == GattCommunicationStatus.Success)
                     {
+#if true
+                        var cur = await LatestDataCharacteristic.ReadClientCharacteristicConfigurationDescriptorAsync();
+                        Debug.WriteLine("Current Value : " + cur.ClientCharacteristicConfigurationDescriptor + " : " + cur.Status);
+
+                        var status = GattCommunicationStatus.Unreachable;
+                        while (status != GattCommunicationStatus.Success)
+                        {
+                            status = await LatestDataCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                            Debug.WriteLine("result : " + status);
+                        }
+
                         LatestDataCharacteristic.ValueChanged += ((s, a) =>
                         {
-                            var reader = DataReader.FromBuffer(a.CharacteristicValue);
-                            byte[] input = new byte[reader.UnconsumedBufferLength];
-                            reader.ReadBytes(input);
-                            // Utilize the data as needed
-
-                            // データを整形
-                            double t = (double)(input[1] + 0x0100 * input[2]) / 100;    // 温度
-                            double h = (double)(input[3] + 0x0100 * input[4]) / 100;    // 湿度
-                            double i = (double)(input[5] + 0x0100 * input[6]);          // 照度
-                            double n = (double)(input[11] + 0x0100 * input[12]) / 100;  // 騒音
-                            //Debug.WriteLine("温度：" + t + " 湿度：" + h + " 照度：" + i + " 騒音：" + n);
-
-                            // ユーザーが登録したハンドラ実行
-                            LatestDataChanged?.Invoke(t, h, i, n);
+                            ShapeResponses(a.CharacteristicValue);
                         });
+#else
+                        //var status = await LatestDataCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+
+                        GattCharacteristicProperties properties = LatestDataCharacteristic.CharacteristicProperties;
+                        // 読み込みがサポートされてるか判定
+                        if (properties.HasFlag(GattCharacteristicProperties.Read))
+                        {
+                            var t = Task.Run(async () =>
+                            {
+                                while (true)
+                                {
+                                    GattReadResult r = await LatestDataCharacteristic.ReadValueAsync();
+                                    if (r.Status == GattCommunicationStatus.Success)
+                                    {
+                                        ShapeResponses(r.Value);
+                                    }
+                                    await Task.Delay(5000);
+                                }
+                            });
+                        }
+#endif
 
                         ret = true;
                     }
-                    else
-                    {
-                        Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] ConfigurationDescriptor設定に失敗しました(status = {status})");
-                    }
+                    //else
+                    //{
+                    //    Debug.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] ConfigurationDescriptor設定に失敗しました(status = {status})");
+                    //}
                 }
                 else
                 {
-                    Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] キャラクタリスティック取得に失敗しました({LatestDataCharacteristicUuid})");
+                    Debug.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] キャラクタリスティック取得に失敗しました({LatestDataCharacteristicUuid})");
                 }
             }
             else
             {
-                Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] サービス取得に失敗しました({SeosorServiceUuid})");
+                Debug.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] サービス取得に失敗しました({SeosorServiceUuid})");
             }
 
             return ret;
+        }
+
+        private void ShapeResponses(IBuffer buf)
+        {
+            var reader = DataReader.FromBuffer(buf);
+            byte[] input = new byte[reader.UnconsumedBufferLength];
+            reader.ReadBytes(input);
+            // Utilize the data as needed
+
+            // データを整形
+            double t = (double)(input[1] + 0x0100 * input[2]) / 100;    // 温度
+            double h = (double)(input[3] + 0x0100 * input[4]) / 100;    // 湿度
+            double i = (double)(input[5] + 0x0100 * input[6]);          // 照度
+            double n = (double)(input[11] + 0x0100 * input[12]) / 100;  // 騒音
+                                                                        //Debug.WriteLine("温度：" + t + " 湿度：" + h + " 照度：" + i + " 騒音：" + n);
+
+            // ユーザーが登録したハンドラ実行
+            LatestDataChanged?.Invoke(t, h, i, n);
         }
 
         /// <summary>
@@ -223,11 +266,11 @@ namespace EnvSensorLibrary
                 DevicePairingResult result = await customPairing.PairAsync(DevicePairingKinds.ConfirmOnly, DevicePairingProtectionLevel.Default);
                 customPairing.PairingRequested -= PairingRequestedHandler;
                 Console.WriteLine("result is : " + result.Status);
-                Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] ペアリング結果：{result.Status}");
+                Debug.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] ペアリング結果：{result.Status}");
             }
             else
             {
-                Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] すでにペアリング済み");
+                Debug.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] すでにペアリング済み");
             }
         }
 
@@ -242,11 +285,11 @@ namespace EnvSensorLibrary
             if (devInfo.Pairing.IsPaired == true)
             {
                 var result = await devInfo.Pairing.UnpairAsync();
-                Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] ペアリング解除結果：{result.Status}");
+                Debug.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] ペアリング解除結果：{result.Status}");
             }
             else
             {
-                Debug.WriteLine($"[{MethodBase.GetCurrentMethod().Name}] すでにペアリング解除済み");
+                Debug.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] すでにペアリング解除済み");
             }
         }
 
