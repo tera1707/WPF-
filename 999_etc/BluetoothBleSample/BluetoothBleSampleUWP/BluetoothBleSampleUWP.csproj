@@ -155,9 +155,6 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.8</Version>
     </PackageReference>
-    <PackageReference Include="OxyPlot.Windows">
-      <Version>2.0.0-unstable1013</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EnvSensorLibraryUWP\EnvSensorLibraryUWP.csproj">

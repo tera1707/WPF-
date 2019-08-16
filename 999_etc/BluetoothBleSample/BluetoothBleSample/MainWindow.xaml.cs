@@ -19,7 +19,8 @@ using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
 using Windows.Storage.Streams;
-using OxyPlot;
+using LiveCharts;
+using LiveCharts.Wpf;
 using EnvSensorLibrary;
 
 namespace BluetoothBleSample
@@ -29,15 +30,64 @@ namespace BluetoothBleSample
     /// </summary>
     public partial class MainWindow : Window
     {
-        public List<DataPoint> DataList { get; }
 
         private EnvSensor EnvSensor { get; set; }
+
+        public SeriesCollection Sc { get; set; } = new SeriesCollection();
 
         private int _count = 0;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            DataContext = this;
+
+            // グラフにはLiveChartを使用
+            // https://qiita.com/myasu/items/e8980be544761d668a82
+
+            /////////////////////////////////////
+            //ステップ１：系列にグラフを追加
+            /////////////////////////////////////
+            Sc.Clear();
+            Sc.Add(
+                new LineSeries //折れ線グラフ
+                {
+                    Title = "温度",
+                    Values = new ChartValues<double>(),
+                });
+            Sc.Add(
+                new LineSeries //折れ線グラフ
+                {
+                    Title = "湿度",
+                    Values = new ChartValues<double>(),
+                });
+            Sc.Add(
+                new LineSeries //折れ線グラフ
+                {
+                    Title = "照度",
+                    Values = new ChartValues<double>(),
+                });
+            Sc.Add(
+                new LineSeries //折れ線グラフ
+                {
+                    Title = "騒音",
+                    Values = new ChartValues<double>(),
+                });
+
+
+            /////////////////////////////////////
+            //ステップ２:LiveChartの設定
+            /////////////////////////////////////
+            //凡例の表示位置
+            LC_Graph.LegendLocation = LegendLocation.Right;
+
+            //軸の設定
+            LC_Graph.AxisX.Clear();     //デフォルトで設定されている軸をクリア
+            LC_Graph.AxisX.Add(new Axis { Title = "横軸", FontSize = 20 });
+            LC_Graph.AxisY.Clear();
+            LC_Graph.AxisY.Add(new Axis { Title = "縦軸", FontSize = 20 });
+
 
             // センサーオブジェクトを作成
             EnvSensor = new EnvSensor();
@@ -52,16 +102,26 @@ namespace BluetoothBleSample
                     this.tbIlluminance.Text = ((double)i).ToString();
                     this.tbNoise.Text = ((double)n).ToString();
 
-                    DataList.Add(new DataPoint(_count++, t));
-                    graph.InvalidatePlot();
+                    // グラフ表示
+                    Sc[0].Values.Add(t);
+                    Sc[1].Values.Add(h);
+                    Sc[2].Values.Add(i);
+                    Sc[3].Values.Add(n);
+
+                    // データが500件ある場合は古いほうから削除する
+                    if (Sc[0].Values.Count > 500)
+                    {
+                        Sc[0].Values.RemoveAt(0);
+                        Sc[1].Values.RemoveAt(0);
+                        Sc[2].Values.RemoveAt(0);
+                        Sc[3].Values.RemoveAt(0);
+                    }
                 });
             });
 
             // センサーと通信開始
             EnvSensor.StartCommunicationWithEnvSensorBL01();
 
-            // グラフ
-            DataList = new List<DataPoint>();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

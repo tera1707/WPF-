@@ -104,9 +104,6 @@ namespace BluetoothBleSampleUWP
             LC_Graph.AxisY.Add(new Axis { Title = "縦軸", FontSize = 20 });
 
 
-
-
-
             // センサーオブジェクトを作成
             EnvSensor = new EnvSensor();
 

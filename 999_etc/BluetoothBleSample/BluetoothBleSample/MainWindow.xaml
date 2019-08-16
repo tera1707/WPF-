@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BluetoothBleSample"
-        xmlns:oxy="http://oxyplot.org/wpf"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
@@ -60,12 +60,10 @@
             <TextBlock Name="tbNoise" Grid.Column="1" Text="{Binding Temperature, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
         </Grid>
 
-        <oxy:Plot Name="graph" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-            <oxy:Plot.Series >
-                <oxy:LineSeries ItemsSource="{Binding DataList, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
-            </oxy:Plot.Series>
-        </oxy:Plot>
-
+        <!--LiveChartを配置-->
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <lvc:CartesianChart x:Name="LC_Graph" Series="{Binding Path=Sc}" />
+        </Grid>
         <DockPanel Grid.Row="3" Grid.ColumnSpan="2">
             <Button Content="デバッグボタン１" Click="Button_Click"/>
             <Button Content="デバッグボタン２"/>

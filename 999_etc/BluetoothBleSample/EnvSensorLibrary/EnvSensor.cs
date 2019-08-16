@@ -125,10 +125,13 @@ namespace EnvSensorLibrary
 
         private void Watcher_DeviceUpdated(DeviceWatcher sender, DeviceInformationUpdate deviceInfoUpdate)
         {
-            if (deviceInfoUpdate.Id == DeviceInformation.Id)
+            if (DeviceInformation != null)
             {
-                DeviceInformation.Update(deviceInfoUpdate);
-                Console.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] デバイスをアップデートしました(Name:{DeviceInformation.Name}, Kind:{DeviceInformation.Kind}, IsPaired{DeviceInformation.Pairing.IsPaired})");
+                if (deviceInfoUpdate.Id == DeviceInformation.Id)
+                {
+                    DeviceInformation.Update(deviceInfoUpdate);
+                    Console.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] デバイスをアップデートしました(Name:{DeviceInformation.Name}, Kind:{DeviceInformation.Kind}, IsPaired{DeviceInformation.Pairing.IsPaired})");
+                }
             }
         }
 
