@@ -20,7 +20,6 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="5*"/>
-            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -33,7 +32,7 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="温度："/>
-            <TextBlock Name="tbTemparature" Grid.Column="1" Text="{Binding Temperature}"/>
+            <TextBlock Name="tbTemparature" Grid.Column="1" Text="--.-"/>
         </Grid>
 
         <Grid Grid.Row="0" Grid.Column="1">
@@ -42,7 +41,7 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="湿度："/>
-            <TextBlock Name="tbHumidity" Grid.Column="1" Text="{Binding Temperature}"/>
+            <TextBlock Name="tbHumidity" Grid.Column="1" Text="--.-"/>
         </Grid>
 
         <Grid Grid.Row="1" Grid.Column="0">
@@ -51,7 +50,7 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="照度："/>
-            <TextBlock Name="tbIlluminance" Grid.Column="1" Text="{Binding Temperature}"/>
+            <TextBlock Name="tbIlluminance" Grid.Column="1" Text="--.-"/>
         </Grid>
 
         <Grid Grid.Row="1" Grid.Column="1">
@@ -60,13 +59,13 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="騒音："/>
-            <TextBlock Name="tbNoise" Grid.Column="1" Text="{Binding Temperature}"/>
+            <TextBlock Name="tbNoise" Grid.Column="1" Text="--.-"/>
         </Grid>
 
 
         <!--LiveChartを配置-->
         <Grid Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <lvc:CartesianChart x:Name="LC_Graph" Series="{x:Bind Path=Sc}" DisableAnimations="True"/>
+            <lvc:CartesianChart x:Name="LC_Graph" Series="{x:Bind Path=Sc}" />
         </Grid>
     </Grid>
 </Page>
