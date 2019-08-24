@@ -55,24 +55,28 @@ namespace BluetoothBleSample
                 {
                     Title = "温度",
                     Values = new ChartValues<double>(),
+                    LineSmoothness = 0,
                 });
             Sc.Add(
                 new LineSeries //折れ線グラフ
                 {
                     Title = "湿度",
                     Values = new ChartValues<double>(),
+                    LineSmoothness = 0,
                 });
             Sc.Add(
                 new LineSeries //折れ線グラフ
                 {
                     Title = "照度",
                     Values = new ChartValues<double>(),
+                    LineSmoothness = 0,
                 });
             Sc.Add(
                 new LineSeries //折れ線グラフ
                 {
                     Title = "騒音",
                     Values = new ChartValues<double>(),
+                    LineSmoothness = 0,
                 });
 
 
@@ -108,8 +112,8 @@ namespace BluetoothBleSample
                     Sc[2].Values.Add(i);
                     Sc[3].Values.Add(n);
 
-                    // データが500件ある場合は古いほうから削除する
-                    if (Sc[0].Values.Count > 500)
+                    // データが60件ある場合は古いほうから削除する
+                    if (Sc[0].Values.Count > 60)
                     {
                         Sc[0].Values.RemoveAt(0);
                         Sc[1].Values.RemoveAt(0);

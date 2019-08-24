@@ -66,14 +66,7 @@
 
         <!--LiveChartを配置-->
         <Grid Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <lvc:CartesianChart x:Name="LC_Graph" Series="{x:Bind Path=Sc}" />
+            <lvc:CartesianChart x:Name="LC_Graph" Series="{x:Bind Path=Sc}" DisableAnimations="True"/>
         </Grid>
-
-
-        <!--<DockPanel Grid.Row="3" Grid.ColumnSpan="2">
-            <Button Content="デバッグボタン１" Click="Button_Click"/>
-            <Button Content="デバッグボタン２"/>
-            <Button Content="デバッグボタン３"/>
-        </DockPanel>-->
     </Grid>
 </Page>

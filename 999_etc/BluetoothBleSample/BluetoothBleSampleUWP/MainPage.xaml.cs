@@ -51,7 +51,7 @@ namespace BluetoothBleSampleUWP
                     //線の色（省略：自動で配色されます）
                     //Stroke = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Red),
                     //直線のスムージング（0：なし、省略：あり）
-                    //LineSmoothness = 0,
+                    LineSmoothness = 0,
                 });
             Sc.Add(
                 new LineSeries //折れ線グラフ
@@ -63,7 +63,7 @@ namespace BluetoothBleSampleUWP
                     //線の色（省略：自動で配色されます）
                     //Stroke = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Red),
                     //直線のスムージング（0：なし、省略：あり）
-                    //LineSmoothness = 0,
+                    LineSmoothness = 0,
                 });
             Sc.Add(
                 new LineSeries //折れ線グラフ
@@ -75,7 +75,7 @@ namespace BluetoothBleSampleUWP
                     //線の色（省略：自動で配色されます）
                     //Stroke = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Red),
                     //直線のスムージング（0：なし、省略：あり）
-                    //LineSmoothness = 0,
+                    LineSmoothness = 0,
                 });
             Sc.Add(
                 new LineSeries //折れ線グラフ
@@ -87,7 +87,7 @@ namespace BluetoothBleSampleUWP
                     //線の色（省略：自動で配色されます）
                     //Stroke = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Red),
                     //直線のスムージング（0：なし、省略：あり）
-                    //LineSmoothness = 0,
+                    LineSmoothness = 0,
                 });
 
 
