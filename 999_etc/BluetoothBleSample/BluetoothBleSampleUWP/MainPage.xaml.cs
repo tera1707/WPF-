@@ -103,6 +103,7 @@ namespace BluetoothBleSampleUWP
             LC_Graph.AxisY.Clear();
             LC_Graph.AxisY.Add(new Axis { Title = "縦軸", FontSize = 20 });
 
+            LC_Graph.DisableAnimations = true;
 
             // センサーオブジェクトを作成
             EnvSensor = new EnvSensor();
@@ -113,10 +114,10 @@ namespace BluetoothBleSampleUWP
                 await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
                     // 数値表示
-                    this.tbTemparature.Text = ((double)t).ToString();
-                    this.tbHumidity.Text = ((double)h).ToString();
-                    this.tbIlluminance.Text = ((double)i).ToString();
-                    this.tbNoise.Text = ((double)n).ToString();
+                    this.tbTemparature.Text = ((double)t).ToString() + "℃";
+                    this.tbHumidity.Text = ((double)h).ToString() + "％";
+                    this.tbIlluminance.Text = ((double)i/10).ToString() + "lux";//ほんとは10で割らなくていいが、数字が大きすぎてグラフが飛び出るので一旦10で割る
+                    this.tbNoise.Text = ((double)n).ToString() + "db";
 
                     // グラフ表示
                     Sc[0].Values.Add(t);
@@ -124,8 +125,8 @@ namespace BluetoothBleSampleUWP
                     Sc[2].Values.Add(i);
                     Sc[3].Values.Add(n);
 
-                    // データが500件ある場合は古いほうから削除する
-                    if (Sc[0].Values.Count > 500)
+                    // データが60件ある場合は古いほうから削除する
+                    if (Sc[0].Values.Count > 60)
                     {
                         Sc[0].Values.RemoveAt(0);
                         Sc[1].Values.RemoveAt(0);

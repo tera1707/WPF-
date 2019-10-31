@@ -29,6 +29,8 @@ namespace EnvSensorLibrary
     {
         private Guid SeosorServiceUuid { get; set; } = new Guid("3000".toEnvSensorUUID());
         private Guid LatestDataCharacteristicUuid { get; set; } = new Guid("3001".toEnvSensorUUID());
+        private Guid SensingIntervalServiceUuid { get; set; } = new Guid("3010".toEnvSensorUUID());
+        private Guid SensingIntervalCharacteristicUuid { get; set; } = new Guid("3011".toEnvSensorUUID());
 
         private DeviceWatcher DeviceWatcher { get; set; }
 
@@ -39,8 +41,10 @@ namespace EnvSensorLibrary
         private BluetoothLEDevice Device { get; set; }
         private GattDeviceServicesResult Services { get; set; }
         private GattDeviceService LatestDataService { get; set; }
+        private GattDeviceService SeinsingIntervalService { get; set; }
         private GattCharacteristicsResult Characteristics { get; set; }
         private GattCharacteristic LatestDataCharacteristic { get; set; }
+        private GattCharacteristic SensingIntervalCharacteristic { get; set; }
 
         /// <summary>
         /// 最新センサ情報変化時のハンドラ
@@ -51,7 +55,9 @@ namespace EnvSensorLibrary
 
         public void Dispose()
         {
+            StopWatcher();
 
+            //todo:温度センサのハンドラも止める必要あり
         }
 
         public EnvSensor()
@@ -91,17 +97,16 @@ namespace EnvSensorLibrary
 
         private void StopWatcher()
         {
-            // デバイス情報更新時のハンドラを登録
-            DeviceWatcher.Added -= Watcher_DeviceAdded;
-            DeviceWatcher.Updated -= Watcher_DeviceUpdated;
-            DeviceWatcher.Removed -= Watcher_DeviceRemoved;
-            DeviceWatcher.EnumerationCompleted -= Watcher_EnumerationCompleted;
-            DeviceWatcher.Stopped -= Watcher_Stopped;
-
-            // watcherスタート
-            if (DeviceWatcherStatus.Started == DeviceWatcher.Status ||
-                DeviceWatcherStatus.EnumerationCompleted == DeviceWatcher.Status)
+            // watcher停止
+            if (DeviceWatcherStatus.Started == DeviceWatcher.Status)
             {
+                // デバイス情報更新時のハンドラを登録
+                DeviceWatcher.Added -= Watcher_DeviceAdded;
+                DeviceWatcher.Updated -= Watcher_DeviceUpdated;
+                DeviceWatcher.Removed -= Watcher_DeviceRemoved;
+                DeviceWatcher.EnumerationCompleted -= Watcher_EnumerationCompleted;
+                DeviceWatcher.Stopped -= Watcher_Stopped;
+
                 DeviceWatcher.Stop();
             }
         }
@@ -112,11 +117,12 @@ namespace EnvSensorLibrary
             if (deviceInfo.Name == "EnvSensor-BL01" || deviceInfo.Name.Contains(SeosorServiceUuid.ToString()))
             {
                 DeviceInformation = deviceInfo;
-                //Console.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] デバイスを追加しました(Name:{deviceInfo.Name}, Kind:{deviceInfo.Kind}, IsPaired{deviceInfo.Pairing.IsPaired})");
 
+                // デバイスが見つかったのでウォッチャーを止める
                 StopWatcher();
 
-                //DoPairing(DeviceInformation);
+                // センシング間隔設定(単位：秒)
+                await SetSensingInterval(600);
 
                 var ret = await ConnectToServiceForLatestData();
                 Console.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] 接続結果：{ret}");
@@ -176,52 +182,73 @@ namespace EnvSensorLibrary
 
                 if (LatestDataCharacteristic != null)
                 {
+                    var cur = await LatestDataCharacteristic.ReadClientCharacteristicConfigurationDescriptorAsync();
+                    Debug.WriteLine("Current Value : " + cur.ClientCharacteristicConfigurationDescriptor + " : " + cur.Status);
 
-                    //if (status == GattCommunicationStatus.Success)
+                    var status = GattCommunicationStatus.Unreachable;
+                    while (status != GattCommunicationStatus.Success)
                     {
-#if true
-                        var cur = await LatestDataCharacteristic.ReadClientCharacteristicConfigurationDescriptorAsync();
-                        Debug.WriteLine("Current Value : " + cur.ClientCharacteristicConfigurationDescriptor + " : " + cur.Status);
-
-                        var status = GattCommunicationStatus.Unreachable;
-                        while (status != GattCommunicationStatus.Success)
-                        {
-                            status = await LatestDataCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
-                            Debug.WriteLine("result : " + status);
-                        }
-
-                        LatestDataCharacteristic.ValueChanged += ((s, a) =>
-                        {
-                            ShapeResponses(a.CharacteristicValue);
-                        });
-#else
-                        //var status = await LatestDataCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
-
-                        GattCharacteristicProperties properties = LatestDataCharacteristic.CharacteristicProperties;
-                        // 読み込みがサポートされてるか判定
-                        if (properties.HasFlag(GattCharacteristicProperties.Read))
-                        {
-                            var t = Task.Run(async () =>
-                            {
-                                while (true)
-                                {
-                                    GattReadResult r = await LatestDataCharacteristic.ReadValueAsync();
-                                    if (r.Status == GattCommunicationStatus.Success)
-                                    {
-                                        ShapeResponses(r.Value);
-                                    }
-                                    await Task.Delay(5000);
-                                }
-                            });
-                        }
-#endif
-
-                        ret = true;
+                        status = await LatestDataCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                        Debug.WriteLine("result : " + status);
                     }
-                    //else
-                    //{
-                    //    Debug.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] ConfigurationDescriptor設定に失敗しました(status = {status})");
-                    //}
+
+                    LatestDataCharacteristic.ValueChanged += ((s, a) =>
+                    {
+                        ShapeResponses(a.CharacteristicValue);
+                    });
+
+                    ret = true;
+                }
+                else
+                {
+                    Debug.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] キャラクタリスティック取得に失敗しました({LatestDataCharacteristicUuid})");
+                }
+            }
+            else
+            {
+                Debug.WriteLine($"[{/*MethodBase.GetCurrentMethod().Name*/0}] サービス取得に失敗しました({SeosorServiceUuid})");
+            }
+
+            return ret;
+        }
+
+        private async Task<bool> SetSensingInterval(short interval)
+        {
+            var ret = false;
+
+            if (DeviceInformation == null) return false;
+
+            // デバイスを、ペアリングしている対象の機器のIDからとってくる
+            Device = await BluetoothLEDevice.FromIdAsync(DeviceInformation.Id);
+
+            // その機器のサービスをとる
+            var services = await Device.GetGattServicesForUuidAsync(SensingIntervalServiceUuid);
+
+            if (services != null)
+            {
+                // そのサービスから、目的のキャラクタリスティックのコレクションをとる
+                var characteristics = await services.Services[0].GetCharacteristicsForUuidAsync(SensingIntervalCharacteristicUuid);
+                // コレクションには(UUID指定してるから)1個しかないはずなので、それを使う
+                var characteristic = characteristics.Characteristics[0];
+
+                if (characteristic != null)
+                {
+                    GattCharacteristicProperties properties = characteristic.CharacteristicProperties;
+
+                    // 書き込みがサポートされてるか判定
+                    if (properties.HasFlag(GattCharacteristicProperties.Write))
+                    {
+                        var writer = new DataWriter();
+                        writer.ByteOrder = ByteOrder.LittleEndian;
+                        writer.WriteInt16(interval);
+                        GattCommunicationStatus r = await characteristic.WriteValueAsync(writer.DetachBuffer());
+                        if (r == GattCommunicationStatus.Success)
+                        {
+                            Console.WriteLine("設定成功");
+                        }
+                    }
+
+                    ret = true;
                 }
                 else
                 {
@@ -248,7 +275,7 @@ namespace EnvSensorLibrary
             double h = (double)(input[3] + 0x0100 * input[4]) / 100;    // 湿度
             double i = (double)(input[5] + 0x0100 * input[6]);          // 照度
             double n = (double)(input[11] + 0x0100 * input[12]) / 100;  // 騒音
-                                                                        //Debug.WriteLine("温度：" + t + " 湿度：" + h + " 照度：" + i + " 騒音：" + n);
+            //Debug.WriteLine("温度：" + t + " 湿度：" + h + " 照度：" + i + " 騒音：" + n);
 
             // ユーザーが登録したハンドラ実行
             LatestDataChanged?.Invoke(t, h, i, n);
@@ -306,22 +333,7 @@ namespace EnvSensorLibrary
             switch (args.PairingKind)
             {
                 case DevicePairingKinds.ConfirmOnly:
-                    // Windows itself will pop the confirmation dialog as part of "consent" if this is running on Desktop or Mobile
-                    // If this is an App for 'Windows IoT Core' or a Desktop and Console application
-                    // where there is no Windows Consent UX, you may want to provide your own confirmation.
                     args.Accept();
-                    break;
-
-                case DevicePairingKinds.ProvidePin:
-                    // A PIN may be shown on the target device and the user needs to enter the matching PIN on 
-                    // this Windows device. Get a deferral so we can perform the async request to the user.
-                    var collectPinDeferral = args.GetDeferral();
-                    string pinFromUser = "952693";
-                    if (!string.IsNullOrEmpty(pinFromUser))
-                    {
-                        args.Accept(pinFromUser);
-                    }
-                    collectPinDeferral.Complete();
                     break;
             }
         }
