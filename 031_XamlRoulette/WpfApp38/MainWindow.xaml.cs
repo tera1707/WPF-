@@ -40,6 +40,36 @@ namespace WpfApp38
             Members.Add("Fさん");
             Members.Add("Gさん");
             Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
+            Members.Add("Hさん");
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
