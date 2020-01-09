@@ -11,32 +11,24 @@ namespace WpfApp39
     public partial class MainWindow : Window
     {
 
-        /// <summary>
         /// マウス押下中フラグ
-        /// </summary>
         bool isMouseLeftButtonDown = false;
 
-        /// <summary>
         /// マウスを押下した点を保存
-        /// </summary>
         Point MouseDonwStartPoint = new Point(0, 0);
 
-        /// <summary>
         /// マウスの現在地
-        /// </summary>
         Point MouseCurrentPoint = new Point(0, 0);
+
+        double TotalScale = 1.0;
+        Point doubleTotalPos = new Point(0,0);
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        /// <summary>
-        /// 【指】
-        /// 移動時のイベント
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// 【指】移動時のイベント
         private void Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
             var delta = e.DeltaManipulation;
@@ -48,14 +40,12 @@ namespace WpfApp39
             var orgY = e.ManipulationOrigin.Y;
             matrix.ScaleAt(scaleDelta, scaleDelta, orgX, orgY);
             MyTarget.RenderTransform = new MatrixTransform(matrix);
+
+            // 最終的な倍率は自前で計算(matrixから取れない)
+            TotalScale *= scaleDelta;
         }
 
-        /// <summary>
-        /// 【マウス】
-        /// マウス押下
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// 【マウス】マウス押下
         private void MyGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             // クリックした位置を保存
@@ -65,34 +55,19 @@ namespace WpfApp39
             isMouseLeftButtonDown = true;
         }
 
-        /// <summary>
-        /// 【マウス】
-        /// マウス離す
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// 【マウス】マウス離す
         private void MyGrid_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             isMouseLeftButtonDown = false;
         }
 
-        /// <summary>
-        /// 【マウス】
-        /// マウスがコントロールの上から外れた
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// 【マウス】マウスがコントロールの上から外れた
         private void MyGrid_MouseLeave(object sender, MouseEventArgs e)
         {
             isMouseLeftButtonDown = false;
         }
 
-        /// <summary>
-        /// 【マウス】
-        /// マウスがコントロールの上を移動
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// 【マウス】マウスがコントロールの上を移動
         private void MyGrid_MouseMove(object sender, MouseEventArgs e)
         {
             if (isMouseLeftButtonDown == false) return;
@@ -120,17 +95,14 @@ namespace WpfApp39
             // 移動開始点を現在位置で更新する
             // （今回の現在位置が次回のMouseMoveイベントハンドラで使われる移動開始点となる）
             MouseDonwStartPoint = MouseCurrentPoint;
+
+            Info.Text = $"倍率：{TotalScale.ToString("F4")} 中心点：({matrix.OffsetX.ToString("F4")}, {matrix.OffsetY.ToString("F4")})";
         }
 
-        /// <summary>
-        /// 【マウス】
-        /// ホイールくるくる
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// 【マウス】ホイールくるくる
         private void MyGrid_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            var scale = 1.0;
+            double scale;
             Matrix matrix = ((MatrixTransform)MyTarget.RenderTransform).Matrix;
 
             // ScaleAt()の拡大中心点(引数3,4個目)に渡すための座標をとるときの基準Controlは、拡大縮小をしたいものの一つ上のControlにすること。
@@ -141,12 +113,15 @@ namespace WpfApp39
             if (e.Delta > 0) scale = 1.25;
             else scale = 1 / 1.25;
 
-            Debug.WriteLine($"倍率：{scale} 中心点：{MouseCurrentPoint} 大きさ：({MyTarget.ActualWidth},{MyTarget.ActualHeight})");
-
             // 拡大実施
             matrix.ScaleAt(scale, scale, MouseCurrentPoint.X, MouseCurrentPoint.Y);
             MyTarget.RenderTransform = new MatrixTransform(matrix);
             MyTarget2.RenderTransform = new MatrixTransform(matrix);
+
+            // 最終的な倍率は自前で計算(matrixから取れない)
+            TotalScale *= scale;
+
+            Info.Text = $"倍率：{TotalScale.ToString("F4")} 中心点：({matrix.OffsetX.ToString("F4")}, {matrix.OffsetY.ToString("F4")})";
         }
     }
 }

@@ -32,14 +32,12 @@
                 <TextBlock x:Name="MyTarget" Text="宿" FontSize="160" Background="Pink" />
             </ScrollViewer>
 
-            <ScrollViewer Grid.Row="1" Grid.Column="2" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"
-                          PreviewMouseLeftButtonDown="MyGrid_MouseLeftButtonDown"
-                          MouseLeftButtonUp="MyGrid_MouseLeftButtonUp"
-                          MouseMove="MyGrid_MouseMove"
-                          MouseLeave="MyGrid_MouseLeave"
-                          PreviewMouseWheel="MyGrid_MouseWheel">
+            <ScrollViewer Grid.Row="1" Grid.Column="2" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
                 <TextBlock x:Name="MyTarget2" Text="命" FontSize="160" Background="Yellow" />
             </ScrollViewer>
+
+            <!-- DEBUG情報 -->
+            <TextBlock Name="Info" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"/>
         </Grid>
     </Grid>
 </Window>
