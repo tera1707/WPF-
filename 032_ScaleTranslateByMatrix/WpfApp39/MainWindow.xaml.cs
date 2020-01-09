@@ -41,8 +41,7 @@ namespace WpfApp39
             matrix.ScaleAt(scaleDelta, scaleDelta, orgX, orgY);
             MyTarget.RenderTransform = new MatrixTransform(matrix);
 
-            // 最終的な倍率は自前で計算(matrixから取れない)
-            TotalScale *= scaleDelta;
+            Info.Text = $"倍率：{TotalScale.ToString("F4")} 中心点：({matrix.OffsetX.ToString("F4")}, {matrix.OffsetY.ToString("F4")})";
         }
 
         /// 【マウス】マウス押下
@@ -118,10 +117,7 @@ namespace WpfApp39
             MyTarget.RenderTransform = new MatrixTransform(matrix);
             MyTarget2.RenderTransform = new MatrixTransform(matrix);
 
-            // 最終的な倍率は自前で計算(matrixから取れない)
-            TotalScale *= scale;
-
-            Info.Text = $"倍率：{TotalScale.ToString("F4")} 中心点：({matrix.OffsetX.ToString("F4")}, {matrix.OffsetY.ToString("F4")})";
+            Info.Text = $"倍率：{matrix.M11} 中心点：({matrix.OffsetX.ToString("F4")}, {matrix.OffsetY.ToString("F4")})";
         }
     }
 }
