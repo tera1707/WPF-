@@ -21,7 +21,16 @@
     </Window.Resources>
     
     <Grid>
-        <Viewbox Margin="20">
+        <!--<Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        
+        <Viewbox Margin="20" Grid.Row="0">
             <Grid Name="RouletteMain" RenderTransformOrigin="0.5,0.5">
                 <Grid.RenderTransform>
                     <TransformGroup>
@@ -48,9 +57,17 @@
         </Viewbox>
         
         <!-- 上の線 -->
-        <Rectangle Stroke="Black" StrokeThickness="10" Height="50" Width="5" VerticalAlignment="Top"/>
+        <Rectangle Grid.Row="0" Stroke="Black" StrokeThickness="10" Height="50" Width="5" VerticalAlignment="Top"/>
         
         <!-- スタートボタン -->
-        <Button Name="StartButton" Width="100" Height="50" Content="スタート" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Click="Button_Click"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Button Name="StartButton" Content="スタート" FontSize="40" Click="Button_Click" Margin="5"/>
+            <CheckBox Name="SoundEnable" Content="音声" Margin="5" IsChecked="True">
+                <CheckBox.RenderTransform>
+                    <ScaleTransform ScaleX="4" ScaleY="4"/>
+                </CheckBox.RenderTransform>
+            </CheckBox>
+        </StackPanel>
+        
     </Grid>
 </Window>

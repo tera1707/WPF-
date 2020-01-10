@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using WMPLib;
 
 namespace WpfApp38
 {
@@ -25,6 +26,20 @@ namespace WpfApp38
         List<string> Members = new List<string>();
 
         /// <summary>
+        /// 音声再生
+        /// </summary>
+        WindowsMediaPlayer _mediaPlayer = new WindowsMediaPlayer();
+
+        /// <summary>
+        /// ドラムロール音
+        /// (ニコニ・コモンズの素材ライブラリより)
+        /// https://commons.nicovideo.jp/materials/
+        /// </summary>
+        string SoundDrumRoll = @".\sound\nc90552.mp3";
+
+        string SoundSymbal = @".\sound\nc166146.wav";
+
+        /// <summary>
         /// コンストラクタ
         /// ここでメンバー登録をする
         /// </summary>
@@ -38,38 +53,6 @@ namespace WpfApp38
             Members.Add("Dさん");
             Members.Add("Eさん");
             Members.Add("Fさん");
-            Members.Add("Gさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
-            Members.Add("Hさん");
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -142,6 +125,14 @@ namespace WpfApp38
                 sb.Begin();
 
                 StartButton.Content = "ストップ";
+
+                // 音声再生(有効時のみ)
+                if (SoundEnable.IsChecked == true)
+                {
+                    _mediaPlayer.URL = SoundDrumRoll;
+                    _mediaPlayer.controls.play();
+                }
+                SoundEnable.IsEnabled = false;
             }
             else
             {
@@ -149,6 +140,14 @@ namespace WpfApp38
                 sb.Pause();
 
                 StartButton.Content = "スタート";
+
+                // 音声再生(有効時のみ)
+                if (SoundEnable.IsChecked == true)
+                {
+                    _mediaPlayer.URL = SoundSymbal;
+                    _mediaPlayer.controls.play();
+                }
+                SoundEnable.IsEnabled = true;
             }
 
             IsRounding = !IsRounding;
