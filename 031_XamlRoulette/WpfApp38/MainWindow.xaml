@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp38"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="600"
+        Title="当番決めルーレット" Height="450" Width="600"
         Loaded="Window_Loaded"
         Name="Root">
 
@@ -50,14 +50,15 @@
                     <!-- ルーレットの外側の円 -->
                     <Ellipse Name="RouletteEllipse" Stroke="Black" StrokeThickness="5" Width="500" Height="500" >
                         <Ellipse.Fill>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <SolidColorBrush Color="AliceBlue"/>
+                            <!--<LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                 <GradientStop Color="Red" Offset="0.0" />
                                 <GradientStop Color="Orange" Offset="0.2" />
                                 <GradientStop Color="Yellow" Offset="0.4" />
                                 <GradientStop Color="LimeGreen" Offset="0.6" />
                                 <GradientStop Color="Blue" Offset="0.8" />
                                 <GradientStop Color="Violet" Offset="1.0" />
-                            </LinearGradientBrush>
+                            </LinearGradientBrush>-->
                         </Ellipse.Fill>
                     </Ellipse>
                 </Grid>
