@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -57,6 +59,9 @@ namespace WpfApp38
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // メンバー一覧を、起動時毎回ランダムに並び替え
+            Members = Members.OrderBy(a => Guid.NewGuid()).ToList();
+
             // 一人あたりの使用する角度を決める
             int anglePerOne = 360 / Members.Count;
 
