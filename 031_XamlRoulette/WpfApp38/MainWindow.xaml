@@ -11,6 +11,8 @@
 
     <Window.Resources>
         <!-- ルーレットのアニメーション定義 -->
+        
+        <!-- ルーレット本体回転アニメ -->
         <Storyboard  x:Key="StartRoulettea">
             <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"  Storyboard.TargetName="RouletteMain" Storyboard.TargetProperty="(Grid.RenderTransform).(TransformGroup.Children)[0].(RotateTransform.Angle)"
                                            RepeatBehavior="Forever" >
@@ -18,50 +20,68 @@
                 <LinearDoubleKeyFrame KeyTime="00:00:00.5" Value="360" />
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
+
+        <!-- 目押し対策 ルーレットの矢印も回転させるアニメ -->
+        <Storyboard  x:Key="StartRouletReverse">
+            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"  Storyboard.TargetName="RouletteArrow" Storyboard.TargetProperty="(Grid.RenderTransform).(TransformGroup.Children)[0].(RotateTransform.Angle)"
+                                           RepeatBehavior="Forever" >
+                <LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="360" />
+                <LinearDoubleKeyFrame KeyTime="00:00:05.0" Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
     </Window.Resources>
     
     <Grid>
-        <!--<Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5*"/>
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>-->
         <Grid.RowDefinitions>
             <RowDefinition Height="5*"/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        
+
         <Viewbox Margin="20" Grid.Row="0">
-            <Grid Name="RouletteMain" RenderTransformOrigin="0.5,0.5">
-                <Grid.RenderTransform>
-                    <TransformGroup>
-                        <!-- 回転の角度 -->
-                        <RotateTransform Angle="0"/>
-                    </TransformGroup>
-                </Grid.RenderTransform>
+            <Grid>
+                <Grid Name="RouletteMain" RenderTransformOrigin="0.5,0.5">
+                    <Grid.RenderTransform>
+                        <TransformGroup>
+                            <!-- 回転の角度 -->
+                            <RotateTransform Angle="0"/>
+                        </TransformGroup>
+                    </Grid.RenderTransform>
 
-                <!-- ルーレットの外側の円 -->
-                <Ellipse Name="RouletteEllipse" Stroke="Black" StrokeThickness="5" Width="500" Height="500" >
-                    <Ellipse.Fill>    
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">    
-                            <GradientStop Color="Red" Offset="0.0" />    
-                            <GradientStop Color="Orange" Offset="0.2" />    
-                            <GradientStop Color="Yellow" Offset="0.4" />    
-                            <GradientStop Color="LimeGreen" Offset="0.6" />    
-                            <GradientStop Color="Blue" Offset="0.8" />    
-                            <GradientStop Color="Violet" Offset="1.0" />    
-                        </LinearGradientBrush>    
-	                </Ellipse.Fill>
-                </Ellipse>
+                    <!-- ルーレットの外側の円 -->
+                    <Ellipse Name="RouletteEllipse" Stroke="Black" StrokeThickness="5" Width="500" Height="500" >
+                        <Ellipse.Fill>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="Red" Offset="0.0" />
+                                <GradientStop Color="Orange" Offset="0.2" />
+                                <GradientStop Color="Yellow" Offset="0.4" />
+                                <GradientStop Color="LimeGreen" Offset="0.6" />
+                                <GradientStop Color="Blue" Offset="0.8" />
+                                <GradientStop Color="Violet" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                </Grid>
+
+                <!-- ルーレットの矢印 -->
+                <Grid Name="RouletteArrow" RenderTransformOrigin="0.5,0.5">
+                    <Grid.RenderTransform>
+                        <TransformGroup>
+                            <!-- 回転の角度 -->
+                            <RotateTransform Angle="0"/>
+                        </TransformGroup>
+                    </Grid.RenderTransform>
+
+                    <Path Stroke="Black" Fill="Red" StrokeThickness="3"  VerticalAlignment="Top" HorizontalAlignment="Center"
+                          Data="M 0,0 L 30,0 L 15,45 Z"/>
+                </Grid>
             </Grid>
-
         </Viewbox>
-        
-        <!-- 上の線 -->
-        <Rectangle Grid.Row="0" Stroke="Black" StrokeThickness="10" Height="50" Width="5" VerticalAlignment="Top"/>
-        
-        <!-- スタートボタン -->
+
         <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <!-- スタートボタン -->
             <Button Name="StartButton" Content="スタート" FontSize="40" Click="Button_Click" Margin="5"/>
+            
+            <!-- 音声のONOFF -->
             <CheckBox Name="SoundEnable" Content="音声" Margin="5" IsChecked="True">
                 <CheckBox.RenderTransform>
                     <ScaleTransform ScaleX="4" ScaleY="4"/>

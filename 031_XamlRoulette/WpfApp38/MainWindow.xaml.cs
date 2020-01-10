@@ -118,11 +118,13 @@ namespace WpfApp38
         {
             // ルーレットを回すためのStoryBoardを検索
             var sb = FindResource("StartRoulettea") as Storyboard;
-            
+            var sbArrow = FindResource("StartRouletReverse") as Storyboard;
+
             if (IsRounding == false)
             {
                 // 回転開始(スタート)
                 sb.Begin();
+                sbArrow.Begin();
 
                 StartButton.Content = "ストップ";
 
@@ -138,6 +140,7 @@ namespace WpfApp38
             {
                 // 回転停止(ストップ)
                 sb.Pause();
+                sbArrow.Pause();
 
                 StartButton.Content = "スタート";
 
