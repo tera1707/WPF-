@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WMPLib;
 
@@ -49,12 +53,13 @@ namespace WpfApp38
         {
             InitializeComponent();
 
-            Members.Add("Aさん");
-            Members.Add("Bさん");
-            Members.Add("Cさん");
-            Members.Add("Dさん");
-            Members.Add("Eさん");
-            Members.Add("Fさん");
+            // jsonから名前リストを読み出し
+            var namelist = ReadSettingJson();
+
+            foreach (var name in namelist.Names)
+            {
+                Members.Add(name);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -160,5 +165,50 @@ namespace WpfApp38
 
             IsRounding = !IsRounding;
         }
+
+        /// <summary>
+        /// クリップボードにコピーボタン
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            var canvas = new RenderTargetBitmap((int)RouletteWhole.ActualWidth, (int)RouletteWhole.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            canvas.Render(RouletteWhole);
+
+            Clipboard.SetImage(canvas);
+        }
+
+        /// <summary>
+        /// json読み出し
+        /// </summary>
+        /// <returns></returns>
+        private NameListJson ReadSettingJson()
+        {
+            // デシリアライズ(jsonファイル→クラスオブジェクト)
+            string jsonFilePath = @".\settings\NameList.json";
+            var data = new NameListJson();
+
+            using (var ms = new FileStream(jsonFilePath, FileMode.Open))
+            {
+                var serializer = new DataContractJsonSerializer(typeof(NameListJson));
+                data = (NameListJson)serializer.ReadObject(ms);
+            }
+
+            return data;
+        }
+
     }
+
+    /// <summary>
+    /// jsonから読み出した名前リストを保存するクラス
+    /// ※utf-8
+    /// </summary>
+    [DataContract]
+    public class NameListJson
+    {
+        [DataMember]
+        public string[] Names { get; set; }
+    }
+
 }

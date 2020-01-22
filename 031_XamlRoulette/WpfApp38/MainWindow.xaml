@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp38"
         mc:Ignorable="d"
-        Title="当番決めルーレット" Height="450" Width="600"
+        Title="当番決めルーレット" Width="600"
         Loaded="Window_Loaded"
         Name="Root">
 
@@ -33,12 +33,12 @@
     
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="5*"/>
+            <RowDefinition Height="3*"/>
             <RowDefinition />
         </Grid.RowDefinitions>
 
         <Viewbox Margin="20" Grid.Row="0">
-            <Grid>
+            <Grid x:Name="RouletteWhole" Background="White">
                 <Grid Name="RouletteMain" RenderTransformOrigin="0.5,0.5">
                     <Grid.RenderTransform>
                         <TransformGroup>
@@ -78,15 +78,17 @@
             </Grid>
         </Viewbox>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
+        <StackPanel Orientation="Vertical" Grid.Row="1">
             <!-- スタートボタン -->
-            <Button Name="StartButton" Content="スタート" FontSize="40" Click="Button_Click" Margin="5"/>
+            <Button Name="StartButton" Content="スタート" FontSize="20" Click="Button_Click" Margin="5"/>
+            <!-- クリップボードにコピー -->
+            <Button Content="ルーレット画像をクリップボードにコピー" FontSize="20" Click="Button_Click_1" Margin="5"/>
             
             <!-- 音声のONOFF -->
             <CheckBox Name="SoundEnable" Content="音声" Margin="5" IsChecked="True">
-                <CheckBox.RenderTransform>
-                    <ScaleTransform ScaleX="4" ScaleY="4"/>
-                </CheckBox.RenderTransform>
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="3" ScaleY="3"/>
+                </CheckBox.LayoutTransform>
             </CheckBox>
         </StackPanel>
         
