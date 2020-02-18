@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
         <!-- UserControlに「root」という名前を付けて、下でバインドするときに「ElementName=root」とすることを忘れないこと！ -->
         <Viewbox>
-            <TextBlock Text="{Binding MyText, ElementName=root}" Grid.Column="0"/>
+            <TextBlock Text="{Binding MyTextProp, ElementName=root, Mode=TwoWay}" Grid.Column="0"/>
         </Viewbox>
         
         <!-- コマンド(=ボタン押したときの処理)も依存関係プロパティで登録できる -->
