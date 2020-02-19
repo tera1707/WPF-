@@ -54,8 +54,8 @@ namespace WpfApp1
 
             if (txt.Length > 5)
             {
-                txt = string.Empty;
-                
+                //txt = string.Empty;
+
             }
 
             //
@@ -100,6 +100,50 @@ namespace WpfApp1
         public SimpleUserControl()
         {
             InitializeComponent();
+        }
+        private static DependencyObject myself;
+        private void Root_Loaded(object sender, RoutedEventArgs e)
+        {
+            myself = this;
+        }
+
+        private void TextBlock_LostFocus(object sender, RoutedEventArgs e)
+        {
+            // LostFocusの方では、このコントロールを使う側でMyTextPにバインドした
+            // プロパティの値が変わってくれる。
+            BindingExpression beb = BindingOperations.GetBindingExpression(this, MyTextProperty);
+            if (beb != null)
+            {
+                beb.Target.SetValue(MyTextProperty, MyTxt.Text);
+                beb.UpdateSource();
+            }
+
+        }
+
+        private void MyTxt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            Console.WriteLine("x.MyTxt_TextChanged   {0}", MyTxt.Text);
+
+            if (MyTxt.Text.Length > 5)
+            {
+
+                Console.WriteLine("x2.MyTxt_TextChanged   {0}", MyTxt.Text);
+
+                // なぜか、TextChangedの中で下記をしても、このコントロールを使う側でMyTextPにバインドした
+                // プロパティの値は変わってくれない。
+                // ValidateStringValueやCoerceStringValue、StringChangedの中でも同じ。
+                // →UserContorl側のプロパティの値が変わったときに上のプロパティを同じように変えに行く
+                // 　ということはできないっぽい。(やり方が見つからない)
+                BindingExpression beb = BindingOperations.GetBindingExpression(this, MyTextProperty);
+                if (beb != null)
+                {
+                    beb.Target.SetValue(MyTextProperty, "");
+                    beb.UpdateSource();
+
+                    MyTxt.Text = "";
+                }
+
+            }
         }
     }
 }

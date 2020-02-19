@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace WpfApp1
         public string DispText
         {
             get { return _dispText; }
-            set { _dispText = value; OnPropertyChanged(nameof(DispText)); }
+            set { Console.WriteLine("DispText = {0}", value); _dispText = value; OnPropertyChanged(nameof(DispText));  }
         }
 
         public MainWindow()

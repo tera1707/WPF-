@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:WpfApp1"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="150"
-             x:Name="root">
+             x:Name="root"
+             Loaded="Root_Loaded">
     <Grid Width="150" Height="100" Background="#99FF0000">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
@@ -14,7 +15,7 @@
         </Grid.ColumnDefinitions>
         <!-- UserControlに「root」という名前を付けて、下でバインドするときに「ElementName=root」とすることを忘れないこと！ -->
         <Viewbox>
-            <TextBlock Text="{Binding MyTextProp, ElementName=root, Mode=TwoWay}" Grid.Column="0"/>
+            <TextBox x:Name="MyTxt" Text="{Binding MyTextProp, ElementName=root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" LostFocus="TextBlock_LostFocus" TextChanged="MyTxt_TextChanged" />
         </Viewbox>
         
         <!-- コマンド(=ボタン押したときの処理)も依存関係プロパティで登録できる -->
