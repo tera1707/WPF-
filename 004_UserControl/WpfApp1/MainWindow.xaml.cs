@@ -1,25 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WpfApp1
 {
-    /// <summary>
-    /// MainWindow.xaml の相互作用ロジック
-    /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -28,12 +12,13 @@ namespace WpfApp1
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private string _dispText = string.Empty;
+        // userControlにバインドして文字列を渡すためのプロパティ
         public string DispText
         {
             get { return _dispText; }
             set { Console.WriteLine("DispText = {0}", value); _dispText = value; OnPropertyChanged(nameof(DispText));  }
         }
+        private string _dispText = string.Empty;
 
         public MainWindow()
         {
