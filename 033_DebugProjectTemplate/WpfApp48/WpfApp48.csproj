@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3EBB76D2-CA9F-40ED-A09F-A631F01E80E6}</ProjectGuid>
+    <ProjectGuid>{0A4B37BA-8C3B-4F5C-A561-FB3001F83090}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>WpfApp39</RootNamespace>
-    <AssemblyName>WpfApp39</AssemblyName>
+    <RootNamespace>WpfApp48</RootNamespace>
+    <AssemblyName>WpfApp48</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -35,10 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DllTestCs">
-      <HintPath Condition="'$(Configuration)' == 'Debug'">dll\Debug\DllTestCs.dll</HintPath>
-      <HintPath Condition="'$(Configuration)' == 'Release'">dll\Release\DllTestCs.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />

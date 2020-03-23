@@ -20,7 +20,7 @@ namespace WpfApp1
                 new PropertyMetadata("",                             // 初期値
                     new PropertyChangedCallback(StringChanged),         // プロパティが変わった時のハンドラ
                     new CoerceValueCallback(CoerceStringValue)),        // 値の矯正のためのハンドラ
-                new ValidateValueCallback(ValidateStringValue));        // 値の妥当性確認のためのハンドラ
+                ValidateStringValue);        // 値の妥当性確認のためのハンドラ
 
         // 値の変化 
         private static void StringChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -45,7 +45,7 @@ namespace WpfApp1
             Console.WriteLine(MethodBase.GetCurrentMethod().Name + " value : " + txt); 
 
             if (txt == null) return false;                          // nullのときは異常(falseをreturnすると、ArgumentExceptionを返してくれる)
-            if (txt.Length >= 5) throw new InvalidCastException();  // 5文字以上なら自分の好きな例外をスローしてやる
+            if (txt.Length >= 5) return false;  // 5文字以上なら自分の好きな例外をスローしてやる
             return true;                                            // それ以外はOKとする(setされた値になる)
         }
         

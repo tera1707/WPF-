@@ -27,15 +27,15 @@ namespace WpfApp1
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
+            //try
+            //{
                 // "A"を付け足していく
-                DispText += "A";
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+                DispText = "AAAAAAAAA";
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    MessageBox.Show(ex.Message);
+            //}
         }
     }
 }

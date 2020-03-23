@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp38"
+        xmlns:draw="clr-namespace:System.Drawing;assembly=System.Drawing"
         mc:Ignorable="d"
-        Title="当番決めルーレット" Width="600"
+        Title="当番決めルーレット" Width="600" Height="1000"
         Loaded="Window_Loaded"
         Name="Root">
 
@@ -31,9 +32,10 @@
         </Storyboard>
     </Window.Resources>
     
-    <Grid>
+    <Grid ShowGridLines="True">
         <Grid.RowDefinitions>
-            <RowDefinition Height="3*"/>
+            <RowDefinition />
+            <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
 
@@ -78,11 +80,15 @@
             </Grid>
         </Viewbox>
 
-        <StackPanel Orientation="Vertical" Grid.Row="1">
+        <Canvas Grid.Row="1" x:Name="TargetArea"/>
+
+        <StackPanel Orientation="Vertical" Grid.Row="2">
             <!-- スタートボタン -->
             <Button Name="StartButton" Content="スタート" FontSize="20" Click="Button_Click" Margin="5"/>
             <!-- クリップボードにコピー -->
             <Button Content="ルーレット画像をクリップボードにコピー" FontSize="20" Click="Button_Click_1" Margin="5"/>
+            <!-- クリップボードにコピー -->
+            <Button Content="ルーレット画像をクリップボードにコピー" FontSize="20" Click="Button_Click_2"  Margin="5"/>
             
             <!-- 音声のONOFF -->
             <CheckBox Name="SoundEnable" Content="音声" Margin="5" IsChecked="True">

@@ -11,7 +11,7 @@
             <ColumnDefinition Width="50"/>
         </Grid.ColumnDefinitions>
         
-        <TextBox x:Name="MyTxt" Text="{Binding MyTextProp, ElementName=root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="MyTxt_TextChanged" />
+        <TextBox x:Name="MyTxt" Text="{Binding MyTextProp, ElementName=root}" />
         <Button Grid.Column="1" Content="ボタン" />
     </Grid>
 </UserControl>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WMPLib;
+//using System.Drawing;
 
 namespace WpfApp38
 {
@@ -86,11 +88,11 @@ namespace WpfApp38
                     X2 = 0,
                     Y2 = RouletteEllipse.Width / 2,
                     StrokeThickness = 5,
-                    Stroke = Brushes.Red,
-                    Fill = Brushes.Transparent,
+                    Stroke = System.Windows.Media.Brushes.Red,
+                    Fill = System.Windows.Media.Brushes.Transparent,
                     VerticalAlignment = VerticalAlignment.Top,
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    RenderTransformOrigin = new Point(0, 1.0),
+                    RenderTransformOrigin = new System.Windows.Point(0, 1.0),
                     RenderTransform = tfgLine
                 };
 
@@ -111,7 +113,7 @@ namespace WpfApp38
                     HorizontalAlignment = HorizontalAlignment.Right,
                     TextAlignment = TextAlignment.Center,
                     FontSize = textHeight,
-                    RenderTransformOrigin = new Point(0, 0.5),
+                    RenderTransformOrigin = new System.Windows.Point(0, 0.5),
                     RenderTransform = tfgText
                 };
 
@@ -176,6 +178,8 @@ namespace WpfApp38
             var canvas = new RenderTargetBitmap((int)RouletteWhole.ActualWidth, (int)RouletteWhole.ActualHeight, 96, 96, PixelFormats.Pbgra32);
             canvas.Render(RouletteWhole);
 
+            
+
             Clipboard.SetImage(canvas);
         }
 
@@ -198,6 +202,45 @@ namespace WpfApp38
             return data;
         }
 
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+
+            string direcotryPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            BitmapImage bimg = new BitmapImage(new Uri(@".\picture\ginga.jpg", UriKind.Relative));
+
+            Canvas myCanvas = new Canvas();
+            myCanvas.Width = 200;
+            myCanvas.Height = 200;
+
+            myCanvas.Background = new ImageBrush(bimg);
+
+            var rectangle = new Rectangle();
+            rectangle.Width = 150;
+            rectangle.Height = 100;
+            rectangle.Stroke = new SolidColorBrush(Colors.Red);
+            rectangle.StrokeThickness = 3.0;
+
+            //myCanvas.Children.Add(myCanvas);
+            myCanvas.Children.Add(rectangle);
+
+
+            var output = new RenderTargetBitmap((int)myCanvas.Width, (int)myCanvas.Height, 96, 96, PixelFormats.Pbgra32);
+            output.Render(myCanvas);
+
+            var jpg = new JpegBitmapEncoder();
+            jpg.Frames.Add(BitmapFrame.Create(output));
+            using (Stream stm = File.Create(direcotryPath + @"\aaa.jpg"))
+            {
+                jpg.Save(stm);
+            }
+
+
+
+            // 表示
+            TargetArea.Children.Add(myCanvas);
+            //MyImage.Source = bimg;
+        }
     }
 
     /// <summary>
