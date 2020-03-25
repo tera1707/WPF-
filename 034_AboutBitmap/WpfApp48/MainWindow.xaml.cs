@@ -82,3 +82,13 @@ namespace WpfApp48
         }
     }
 }
+/*
+    g.FrawString等の書き方
+    https://docs.microsoft.com/ja-jp/dotnet/api/system.drawing.graphics.drawstring?view=netframework-4.8
+ 
+    Bitmapをxamlで画面に表示するまで(ストリームからBitmapFrameに変換)
+    https://water2litter.net/gin/?p=979
+     
+    ビットマップ形式の画像データを相互変換
+    https://qiita.com/YSRKEN/items/a24bf2173f0129a5825c
+*/
