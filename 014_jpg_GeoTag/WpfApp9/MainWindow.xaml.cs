@@ -3,6 +3,8 @@ using System.Windows;
 using Windows.Devices.Geolocation;      // BasicGeoposition、Geopointのため
 using Windows.Storage.FileProperties;   // GeotagHelperのため
 using Microsoft.Win32;                  // ファイルダイアログのため
+using System.IO;
+using System.Collections.Generic;
 
 // UWPのAPIを使用するため、プロジェクトの参照に下記の追加必要
 // C:\Program Files (x86)\Windows Kits\10\UnionMetadata\Windows.winmd
@@ -67,23 +69,37 @@ namespace WpfApp9
         /// <param name="e"></param>
         private async void Button_Click_2(object sender, RoutedEventArgs e)
         {
+            var cur = Directory.GetCurrentDirectory();      // exeのあるディレクトリ
+            var filepath = cur + @"\ginga.bmp";             // 元の画像
+            var filepath_out_jpg = cur + @"\ginga_out.jpg"; // jpgとして保存する画像
+            var filepath_out_bmp = cur + @"\ginga_out_fake.jpg"; // bmpとして保存する画像
 
-            var filepath = FilePathBox.Text;
-            var file = await Windows.Storage.StorageFile.GetFileFromPathAsync(filepath);
-            if (file != null)
+            using (var fs = new FileStream(filepath, FileMode.Open, FileAccess.ReadWrite))
+            using (var bmp = new System.Drawing.Bitmap(fs))
             {
-                // GPS値作成
-                BasicGeoposition bgps = new BasicGeoposition();
-                bgps.Latitude = 48.0;
-                bgps.Longitude = 2.0;
-                bgps.Altitude = 1.0;
-
-                // GPS値をGeopointにセット
-                Geopoint gps = new Geopoint(bgps);
-
-                // GPS値をjpgファイルに書き込み
-                await GeotagHelper.SetGeotagAsync(file, gps);
+                // 元の画像を、jpgとbmpで保存し分ける
+                bmp.Save(filepath_out_jpg, System.Drawing.Imaging.ImageFormat.Jpeg);
+                bmp.Save(filepath_out_bmp, System.Drawing.Imaging.ImageFormat.Bmp);
             }
+
+            // GPS値作成
+            BasicGeoposition bgps = new BasicGeoposition() { Latitude = 3.0, Longitude = 2.0, Altitude = 1.0 };
+            // GPS値をGeopointにセット
+            Geopoint gps = new Geopoint(bgps);
+
+            try
+            {
+                // GPS値をjpgファイルに書き込み
+                var stjpg = await Windows.Storage.StorageFile.GetFileFromPathAsync(filepath_out_jpg);
+                await GeotagHelper.SetGeotagAsync(stjpg, gps);// →こっちは問題なくgeotag付与できる
+                var stbmp = await Windows.Storage.StorageFile.GetFileFromPathAsync(filepath_out_bmp);
+                await GeotagHelper.SetGeotagAsync(stbmp, gps);// →こっちは、jpgではないのでgeotag付与時に例外発生
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
         }
     }
 }

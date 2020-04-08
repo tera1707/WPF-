@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -54,8 +56,9 @@ namespace WpfApp48
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            using (var bmp = new Bitmap(@"img.bmp"))
-            using (var fs = new FileStream(@"imgout1.bmp", FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            using (var bmp = new Bitmap(@"input.bmp"))
+            //using (var fs = new FileStream(@"output1.bmp", FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            using (var fs = new MemoryStream())
             {
                 using (var g = Graphics.FromImage(bmp))
                 {
@@ -63,12 +66,12 @@ namespace WpfApp48
                     g.DrawRectangle(Pens.Red, new System.Drawing.Rectangle(100, 100, 100, 100));
                 }
 
-                // 保存方法① streamで保存
+                //// 保存方法① streamで保存
                 fs.SetLength(0);
                 bmp.Save(fs, System.Drawing.Imaging.ImageFormat.Bmp);
 
                 // 保存方法② ファイルに保存
-                bmp.Save(@"imgout2.bmp");
+                //bmp.Save(@"output2.bmp");
 
                 // 画面に表示
                 var a = BitmapFrame.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
@@ -78,7 +81,36 @@ namespace WpfApp48
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            AddLog("ログ３");
+            // 画面からRenderTargetBitmapに画像を描画
+            var canvas = new RenderTargetBitmap((int)MyImage.ActualWidth, (int)MyImage.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+            canvas.Render(MyImage);
+
+            using (var stream = new MemoryStream())
+            {
+                // MemoryStreamに、RenderTargetBitmapから画像を流し込む
+                BitmapEncoder encoder = new BmpBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(canvas));
+                encoder.Save(stream);
+
+                // MemoryStreamからBitmapを作成
+                var editted = new System.Drawing.Bitmap(stream);
+
+                // GraphicsでBitmapを編集(四角を書き込む)
+                using (var g = Graphics.FromImage(editted))
+                {
+                    g.DrawRectangle(Pens.Green, new System.Drawing.Rectangle(3, 3, 200, 200));
+                }// →この時点で、streamに緑の四角が書き込まれてる
+
+                // 四角を書き込んだ画像をstreamに流し込む
+                editted.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
+                editted.Dispose();
+
+                // MemoryStreamからBitmapを作成から、BitmapFrame(BitmapSourceの子クラス)を作成
+                stream.Seek(0, SeekOrigin.Begin);// seekでBeginに戻さないと例外
+                var bitmapSource = BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                // それをImageのSourceにセット → 表示！
+                MyImage.Source = bitmapSource;
+            }
         }
     }
 }
