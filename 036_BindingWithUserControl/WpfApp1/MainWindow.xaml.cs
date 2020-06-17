@@ -7,10 +7,7 @@ namespace WpfApp1
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
-        {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        protected void OnPropertyChanged(string propertyName) => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public double DoubleValue1
         {
@@ -18,14 +15,12 @@ namespace WpfApp1
             set { Console.WriteLine("* MainWindow DoubleValue1 = {0} ", value); _doubleValue1 = value; OnPropertyChanged(nameof(DoubleValue1)); }
         }
         private double _doubleValue1 = 0.0;
-
         public double DoubleValue2
         {
             get { return _doubleValue2; }
             set { Console.WriteLine("* MainWindow DoubleValue2 = {0} ", value); _doubleValue2 = value; OnPropertyChanged(nameof(DoubleValue2)); }
         }
         private double _doubleValue2 = 0.0;
-
         public double DoubleValue3
         {
             get { return _doubleValue3; }
@@ -33,12 +28,10 @@ namespace WpfApp1
         }
         private double _doubleValue3 = 0.0;
 
-
         public MainWindow()
         {
             InitializeComponent();
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             DoubleValue1++;
