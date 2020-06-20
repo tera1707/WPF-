@@ -7,35 +7,36 @@ namespace WpfApp1
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
-        {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        protected void OnPropertyChanged(string propertyName) =>  this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        // userControlにバインドして文字列を渡すためのプロパティ
-        public string DispText
+        public double DoubleValue1
         {
-            get { return _dispText; }
-            set { Console.WriteLine("DispText = {0}", value); _dispText = value; OnPropertyChanged(nameof(DispText));  }
+            get { return _doubleValue1; }
+            set { Console.WriteLine("* MainWindow DoubleValue1 = {0} ", value); _doubleValue1 = value; OnPropertyChanged(nameof(DoubleValue1)); }
         }
-        private string _dispText = string.Empty;
+        private double _doubleValue1 = 0.0;
+        public double DoubleValue2
+        {
+            get { return _doubleValue2; }
+            set { Console.WriteLine("* MainWindow DoubleValue2 = {0} ", value); _doubleValue2 = value; OnPropertyChanged(nameof(DoubleValue2)); }
+        }
+        private double _doubleValue2 = 0.0;
+        public double DoubleValue3
+        {
+            get { return _doubleValue3; }
+            set { Console.WriteLine("* MainWindow DoubleValue3 = {0} ", value); _doubleValue3 = value; OnPropertyChanged(nameof(DoubleValue3)); }
+        }
+        private double _doubleValue3 = 0.0;
 
         public MainWindow()
         {
             InitializeComponent();
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
-                // "A"を付け足していく
-                DispText = "AAAAAAAAA";
-            //}
-            //catch (ArgumentException ex)
-            //{
-            //    MessageBox.Show(ex.Message);
-            //}
+            DoubleValue1++;
+            DoubleValue2++;
+            DoubleValue3++;
         }
     }
 }

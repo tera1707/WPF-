@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -7,58 +6,37 @@ namespace WpfApp1
 {
     public partial class SimpleUserControl : UserControl
     {
-        public string MyTextProp
+        public double MyDoubleValue1
         {
-            get { return (string)GetValue(MyTextProperty); }
-            set { SetValue(MyTextProperty, value); }
+            get => (double)GetValue(MyDoubleValue1Property);
+            set { Console.WriteLine(" - UserControl DoubleValue1 = {0} ", value); SetValue(MyDoubleValue1Property, value); }
         }
-        public static readonly DependencyProperty MyTextProperty =
-            DependencyProperty.Register(
-                nameof(MyTextProp),                                     // プロパティ名
-                typeof(string),                                         // プロパティの型
-                typeof(SimpleUserControl),                              // プロパティを所有する型＝このクラスの名前
-                new PropertyMetadata("",                             // 初期値
-                    new PropertyChangedCallback(StringChanged),         // プロパティが変わった時のハンドラ
-                    new CoerceValueCallback(CoerceStringValue)),        // 値の矯正のためのハンドラ
-                ValidateStringValue);        // 値の妥当性確認のためのハンドラ
-
-        // 値の変化 
-        private static void StringChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DependencyProperty MyDoubleValue1Property = DependencyProperty.Register(nameof(MyDoubleValue1), typeof(double), typeof(SimpleUserControl));
+        //---------------------------------------------------------------------------
+        public double MyDoubleValue2
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name + " old : " + e.OldValue + " new : " + e.NewValue);
-            // 値がかわらないとここは通らない。(プロパティに値を入れても、同じ値だとここは通らない)
+            get => (double)GetValue(MyDoubleValue2Property);
+            set { Console.WriteLine(" - UserControl DoubleValue2 = {0} ", value); SetValue(MyDoubleValue2Property, value); }
         }
-
-        // 値の矯正
-        private static object CoerceStringValue(DependencyObject d, object baseValue)
+        public static readonly DependencyProperty MyDoubleValue2Property = DependencyProperty.Register(nameof(MyDoubleValue2), typeof(double), typeof(SimpleUserControl));
+        //---------------------------------------------------------------------------
+        public double MyDoubleValue3
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name + " value : " + (string)baseValue);
-
-            var txt = (string)baseValue;
-            return (txt.Length <= 5) ? txt : string.Empty;   // 5文字以上なら空文字に矯正する
+            get => (double)GetValue(MyDoubleValue3Property);
+            set { Console.WriteLine(" - UserControl DoubleValue3 = {0} ", value); SetValue(MyDoubleValue3Property, value); }
         }
-
-        // 値の妥当性確認
-        private static bool ValidateStringValue(object value)
-        {
-            var txt = (string)value;
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name + " value : " + txt); 
-
-            if (txt == null) return false;                          // nullのときは異常(falseをreturnすると、ArgumentExceptionを返してくれる)
-            if (txt.Length >= 5) return false;  // 5文字以上なら自分の好きな例外をスローしてやる
-            return true;                                            // それ以外はOKとする(setされた値になる)
-        }
-        
+        public static readonly DependencyProperty MyDoubleValue3Property = DependencyProperty.Register(nameof(MyDoubleValue3), typeof(double), typeof(SimpleUserControl));
+        //---------------------------------------------------------------------------
         // コンストラクタ
         public SimpleUserControl()
         {
             InitializeComponent();
         }
-
-        // テキストが変化したときのイベント
-        private void MyTxt_TextChanged(object sender, TextChangedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine(MethodBase.GetCurrentMethod().Name);
+            MyDoubleValue1 += 1.0;
+            MyDoubleValue2 += 1.0;
+            MyDoubleValue3 += 1.0;
         }
     }
 }
