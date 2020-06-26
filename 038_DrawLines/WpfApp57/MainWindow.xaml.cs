@@ -1,20 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WpfApp57
 {
@@ -32,6 +20,8 @@ namespace WpfApp57
 
         // ------------------------------------------------
 
+        private double y = 150.0;
+
         public List<Point> Points
         {
             get { return _points; }
@@ -46,12 +36,19 @@ namespace WpfApp57
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Points.Add(new Point(10, 10));
-            Points.Add(new Point(100, 10));
-            Points.Add(new Point(100, 100));
-            Points.Add(new Point(10, 100));
-            Points.Add(new Point(10, 10));
-            OnPropertyChanged(nameof(Points));
+            var _ = Task.Run(() =>
+            {
+                this.Dispatcher.Invoke(new Action(async () =>
+                {
+                    for (int i = 0; i < 100; i++)
+                    {
+                        Points.Add(new Point((double)i, y + 150.0 * Math.Sin((double)i / (Math.PI))));
+                        OnPropertyChanged(nameof(Points));
+                        await Task.Delay(30);
+                    }
+                }));
+            });
+
         }
     }
 }
