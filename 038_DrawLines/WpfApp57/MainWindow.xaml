@@ -13,7 +13,10 @@
     </Window.Resources>
     <Grid>
         <Canvas>
-            <Polyline Name="MyLine" Stroke="Red" StrokeThickness="1"  Points="{Binding Points, ElementName=root, Converter={StaticResource ListPointToPointCollectionConverter}}"/>
+            <!-- 線 -->
+            <Polyline Name="MyLine" Stroke="Red" StrokeThickness="1" 
+                      Points="{Binding Points, ElementName=root, Converter={StaticResource ListPointToPointCollectionConverter}}"/>
+            <!-- ボタン -->
             <Button Content="Button" Height="100" Canvas.Left="10" Canvas.Top="324" Width="100" Click="Button_Click"/>
         </Canvas>
     </Grid>

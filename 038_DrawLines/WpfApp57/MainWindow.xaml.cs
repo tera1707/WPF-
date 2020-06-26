@@ -7,7 +7,7 @@ using System.Windows;
 namespace WpfApp57
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// ボタンをおしたら、サインカーブを書く
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
@@ -20,6 +20,7 @@ namespace WpfApp57
 
         // ------------------------------------------------
 
+        // サインカーブの縦方向の真ん中座標
         private double y = 150.0;
 
         public List<Point> Points
@@ -28,7 +29,7 @@ namespace WpfApp57
             set { _points = value; OnPropertyChanged(nameof(Points)); }
         }
         private List<Point> _points = new List<Point>();
-
+        
         public MainWindow()
         {
             InitializeComponent();
