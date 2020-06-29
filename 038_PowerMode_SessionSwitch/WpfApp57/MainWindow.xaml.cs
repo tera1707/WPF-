@@ -53,49 +53,19 @@ namespace WpfApp57
             InitializeComponent();
         }
 
+        // 何のイベントハンドラが動いたのか、またイベントのArgの中身を表示する。
         private void root_Loaded(object sender, RoutedEventArgs e)
         {
-            SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
-            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
-        }
-
-        private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
-        {
-            AddLog(e.Mode.ToString());
-
-            switch (e.Mode)
-            {
-                case PowerModes.Suspend:
-                    break;
-                case PowerModes.Resume:
-                    break;
-                default:
-                case PowerModes.StatusChange:
-                    break;
-            }
-        }
-
-        private void SystemEvents_SessionSwitch(object sender, SessionSwitchEventArgs e)
-        {
-            AddLog(e.Reason.ToString());
-
-            switch (e.Reason)
-            {
-                case SessionSwitchReason.ConsoleConnect:
-                    break;
-                case SessionSwitchReason.ConsoleDisconnect:
-                    break;
-                case SessionSwitchReason.RemoteConnect:
-                    break;
-                case SessionSwitchReason.RemoteDisconnect:
-                    break;
-                default:
-                    break;
-            }
+            SystemEvents.SessionSwitch          += ((sender, e) => { AddLog("SessionSwitch       :" + e.Reason.ToString()); });
+            SystemEvents.SessionEnding          += ((sender, e) => { AddLog("SessionEnding       :" + e.Reason.ToString()); });
+            SystemEvents.SessionEnded           += ((sender, e) => { AddLog("SessionEnded        :" + e.Reason.ToString()); });
+            SystemEvents.PowerModeChanged       += ((sender, e) => { AddLog("PowerModeChanged    :" + e.Mode.ToString()); });
+            SystemEvents.EventsThreadShutdown   += ((sender, e) => { AddLog("EventsThreadShutdown:" + e.ToString()); });
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            AddLog(MethodBase.GetCurrentMethod().Name);
             AddLog("Test");
         }
     }
