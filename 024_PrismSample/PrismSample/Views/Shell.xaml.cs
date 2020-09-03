@@ -10,16 +10,9 @@ namespace PrismSample.Views
     /// </summary>
     public partial class Shell : Window
     {
-        [Dependency]
-        public IRegionManager RegionManager { get; set; }
         public Shell()
         {
             InitializeComponent();
-        }
-
-        private void Window_Activated(object sender, EventArgs e)
-        {
-            this.RegionManager.RequestNavigate("MainRegion", nameof(UserControl1));
         }
     }
 }

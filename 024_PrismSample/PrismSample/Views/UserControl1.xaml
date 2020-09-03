@@ -3,18 +3,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:local="clr-namespace:PrismSample.Views"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    
     <Grid Background="Beige">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Text="画面１" FontSize="60"/>
-        <Button Grid.Row="1" Content="画面１のボタン" Command="{Binding ButtonCommand}"/>
+        <StackPanel Grid.Row="1" >
+            <Button Content="画面２に遷移" Command="{Binding ButtonCommand}"/>
+            <Button Content="KeepAliveをON" Command="{Binding ButtonKeepAliveONCommand}"/>
+            <Button Content="KeepAliveをOFF" Command="{Binding ButtonKeepAliveOFFCommand}"/>
+            <Button Content="IsNavigationTargetをON" Command="{Binding ButtonIsNavigationTargetONCommand}"/>
+            <Button Content="IsNavigationTargetをOFF" Command="{Binding ButtonIsNavigationTargetOFFCommand}"/>
+        </StackPanel>
     </Grid>
 </UserControl>

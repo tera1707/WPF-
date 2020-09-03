@@ -3,43 +3,67 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
 using PrismSample.Views;
+using System.Diagnostics;
 
 namespace PrismSample.ViewModels
 {
-    class UserControl1ViewModel : BindableBase, INavigationAware
+    class UserControl1ViewModel : BindableBase, INavigationAware, IRegionMemberLifetime
     {
         [Dependency]
         public IRegionManager RegionManager { get; set; }
-
         public DelegateCommand ButtonCommand { get; }
+        public DelegateCommand ButtonKeepAliveONCommand { get; }
+        public DelegateCommand ButtonKeepAliveOFFCommand { get; }
+        public DelegateCommand ButtonIsNavigationTargetONCommand { get; }
+        public DelegateCommand ButtonIsNavigationTargetOFFCommand { get; }
+        public DelegateCommand LoadedCommand { get; }
+
+        public bool KeepAlive { get; set; }
+        public bool IsNavigationTargetFlag = false;
 
         public UserControl1ViewModel()
         {
+            Debug.WriteLine("画面１ コンストラクタ");
+
+            this.LoadedCommand = new DelegateCommand(() =>
+            {
+                Debug.WriteLine("画面１ LoadedCommand");
+            });
+
             this.ButtonCommand = new DelegateCommand(() =>
             {
                 // Shell.xaml.csで作成したリージョンの名前と、画面のUserControlクラス名を指定して、画面遷移させる。
                 // (パラメータを渡すこともできる)
-                this.RegionManager.RequestNavigate("MainRegion", nameof(UserControl2), new NavigationParameters($"id=1"));
+                this.RegionManager.RequestNavigate("RedRegion", nameof(UserControl2), new NavigationParameters($"id=1"));
             });
+
+            this.ButtonKeepAliveONCommand = new DelegateCommand(() => KeepAlive = true );
+            this.ButtonKeepAliveOFFCommand = new DelegateCommand(() => KeepAlive = false);
+
+            this.ButtonIsNavigationTargetONCommand = new DelegateCommand(() => IsNavigationTargetFlag = true);
+            this.ButtonIsNavigationTargetOFFCommand = new DelegateCommand(() => IsNavigationTargetFlag = false);
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
+            Debug.WriteLine("画面１ IsNavigationTarget  return value is" + IsNavigationTargetFlag);
             // このメソッドの返す値により、画面のインスタンスを使いまわすかどうか制御できる。
             // true ：インスタンスを使いまわす(画面遷移してもコンストラクタ呼ばれない)
             // false：インスタンスを使いまわさない(画面遷移するとコンストラクタ呼ばれる)
             // メソッド実装なし：trueになる
-            return false;
+            return IsNavigationTargetFlag;
         }
 
         public void OnNavigatedFrom(NavigationContext navigationContext)
         {
             // この画面から他の画面に遷移するときの処理
+            Debug.WriteLine("画面１ NavigatedFrom");
         }
 
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
             // 他の画面からこの画面に遷移したときの処理
+            Debug.WriteLine("画面１ NavigatedTo");
 
             // 画面遷移元から、この画面に遷移したときにパラメータを受け取れる。
             string Id = navigationContext.Parameters["id"] as string;

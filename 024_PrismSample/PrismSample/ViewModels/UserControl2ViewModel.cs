@@ -11,31 +11,26 @@ namespace PrismSample.ViewModels
     {
         [Dependency]
         public IRegionManager RegionManager { get; set; }
-
         public DelegateCommand ButtonCommand { get; }
+        public DelegateCommand LoadedCommand { get; }
 
         public UserControl2ViewModel()
         {
+            Debug.WriteLine("画面２ コンストラクタ");
+
+            this.LoadedCommand = new DelegateCommand(() =>
+            {
+                Debug.WriteLine("画面２ LoadedCommand");
+            });
+
             this.ButtonCommand = new DelegateCommand(() =>
             {
-                this.RegionManager.RequestNavigate("MainRegion", nameof(UserControl1), new NavigationParameters($"id=1"));
+                this.RegionManager.RequestNavigate("RedRegion", nameof(UserControl3), new NavigationParameters($"id=1"));
             });
         }
 
-        public bool IsNavigationTarget(NavigationContext navigationContext)
-        {
-            return false;
-        }
-
-        public void OnNavigatedFrom(NavigationContext navigationContext)
-        {
-            Debug.WriteLine("画面２ NavigatedFrom");
-        }
-
-        public void OnNavigatedTo(NavigationContext navigationContext)
-        {
-            Debug.WriteLine("画面２ NavigatedTo");
-            string Id = navigationContext.Parameters["id"] as string;
-        }
+        public bool IsNavigationTarget(NavigationContext navigationContext) => true;
+        public void OnNavigatedFrom(NavigationContext navigationContext) => Debug.WriteLine("画面２ NavigatedFrom");
+        public void OnNavigatedTo(NavigationContext navigationContext) => Debug.WriteLine("画面２ NavigatedTo");
     }
 }

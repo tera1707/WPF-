@@ -3,22 +3,41 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:PrismSample.Views"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
         xmlns:ViewModels="clr-namespace:PrismSample.ViewModels"
         mc:Ignorable="d"
         Title="Shell"
-        Height="300"
-        Width="300"
-        Activated="Window_Activated">   <!-- ★追記 -->
-    
+        Height="600"
+        Width="600">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <ContentControl Grid.Row="0" prism:RegionManager.RegionName="MainRegion" />
-        <!--<Button Grid.Row="1" Content="ボタン" Command="{Binding ButtonCommand}"/>-->
+
+        <Border Grid.Row="0" Grid.Column="0" BorderBrush="Green" BorderThickness="3" Grid.RowSpan="2">
+            <ContentControl prism:RegionManager.RegionName="GreenRegion" />
+        </Border>
+
+        <Border Grid.Row="0" Grid.Column="1" BorderBrush="Red" BorderThickness="3">
+            <ContentControl prism:RegionManager.RegionName="RedRegion" />
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" BorderBrush="Blue" BorderThickness="3">
+            <ContentControl prism:RegionManager.RegionName="BlueRegion" />
+        </Border>
     </Grid>
 </Window>
