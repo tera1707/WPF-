@@ -21,12 +21,18 @@
             <Button Content="RedRegionをUserControl1にする" Command="{Binding ButtonCommand}" CommandParameter="0"/>
             <Button Content="RedRegionをUserControl2にする" Command="{Binding ButtonCommand}" CommandParameter="1"/>
             <Button Content="RedRegionをUserControl3にする" Command="{Binding ButtonCommand}" CommandParameter="2"/>
+            <Separator/>
             <Button Content="BlueRegionをUserControl1にする" Command="{Binding ButtonCommand}" CommandParameter="3"/>
             <Button Content="BlueRegionをUserControl2にする" Command="{Binding ButtonCommand}" CommandParameter="4"/>
             <Button Content="BlueRegionをUserControl3にする" Command="{Binding ButtonCommand}" CommandParameter="5"/>
             <Separator />
             <Button Content="RedRegionを消去" Command="{Binding ButtonCommand}" CommandParameter="10"/>
             <Button Content="BlueRegionを消去" Command="{Binding ButtonCommand}" CommandParameter="11"/>
+            <Separator />
+            <Button Content="RedRegionを「戻る」" Command="{Binding ButtonCommand}" CommandParameter="20"/>
+            <Button Content="RedRegionを「進める」" Command="{Binding ButtonCommand}" CommandParameter="21"/>
+            <Separator />
+            <Button Content="GCを走らす" Command="{Binding ButtonCommand}" CommandParameter="91"/>
         </StackPanel>
     </Grid>
 </UserControl>

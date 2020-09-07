@@ -18,12 +18,28 @@ namespace PrismSample.ViewModels
         public DelegateCommand ButtonIsNavigationTargetOFFCommand { get; }
         public DelegateCommand LoadedCommand { get; }
 
-        public bool KeepAlive { get; set; }
-        public bool IsNavigationTargetFlag = false;
+        private static int constructorCounter = 0;
+        private static int destructorCounter = 0;
+
+        public bool KeepAlive
+        {
+            get
+            {
+                Debug.WriteLine("画面１ KeepAlive is " + keepalive);
+                return keepalive;
+            }
+            set
+            {
+                keepalive = value;
+            }
+        }
+        private bool keepalive = true;
+        public bool IsNavigationTargetFlag = true;
 
         public UserControl1ViewModel()
         {
-            Debug.WriteLine("画面１ コンストラクタ");
+            constructorCounter++;
+            Debug.WriteLine("画面１ コンストラクタ " + constructorCounter + " 個目");
 
             this.LoadedCommand = new DelegateCommand(() =>
             {
@@ -37,11 +53,17 @@ namespace PrismSample.ViewModels
                 this.RegionManager.RequestNavigate("RedRegion", nameof(UserControl2), new NavigationParameters($"id=1"));
             });
 
-            this.ButtonKeepAliveONCommand = new DelegateCommand(() => KeepAlive = true );
+            this.ButtonKeepAliveONCommand = new DelegateCommand(() => KeepAlive = true);
             this.ButtonKeepAliveOFFCommand = new DelegateCommand(() => KeepAlive = false);
 
             this.ButtonIsNavigationTargetONCommand = new DelegateCommand(() => IsNavigationTargetFlag = true);
             this.ButtonIsNavigationTargetOFFCommand = new DelegateCommand(() => IsNavigationTargetFlag = false);
+        }
+
+        ~UserControl1ViewModel()
+        {
+            destructorCounter++;
+            Debug.WriteLine("画面１ デストラクタ " + destructorCounter + " 回目");
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)

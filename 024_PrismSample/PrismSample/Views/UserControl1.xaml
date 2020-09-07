@@ -24,10 +24,14 @@
         <TextBlock Grid.Row="0" Text="画面１" FontSize="60"/>
         <StackPanel Grid.Row="1" >
             <Button Content="画面２に遷移" Command="{Binding ButtonCommand}"/>
+            <Separator/>
             <Button Content="KeepAliveをON" Command="{Binding ButtonKeepAliveONCommand}"/>
             <Button Content="KeepAliveをOFF" Command="{Binding ButtonKeepAliveOFFCommand}"/>
+            <Separator/>
             <Button Content="IsNavigationTargetをON" Command="{Binding ButtonIsNavigationTargetONCommand}"/>
             <Button Content="IsNavigationTargetをOFF" Command="{Binding ButtonIsNavigationTargetOFFCommand}"/>
+            <Separator/>
+            <Button Content="プロパティを＋＋" Command="{Binding ButtonSetPropertyValueCommand}"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -3,6 +3,7 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
 using PrismSample.Views;
+using System;
 using System.Diagnostics;
 
 namespace PrismSample.ViewModels
@@ -37,6 +38,7 @@ namespace PrismSample.ViewModels
                     case 5: RegionManager.RequestNavigate("BlueRegion", nameof(UserControl3), new NavigationParameters($"id=1")); break;
                     case 10: RegionManager.Regions["RedRegion"].RemoveAll(); break;
                     case 11: RegionManager.Regions["BlueRegion"].RemoveAll(); break;
+                    case 91: GC.Collect(); break;
                 }
 
             });
