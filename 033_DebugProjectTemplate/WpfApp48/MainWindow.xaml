@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp48"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" Height="900" Width="800"
         Loaded="Window_Loaded"
         Name="root">
     <Grid>
@@ -16,12 +16,17 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Button Grid.Row="1" Grid.Column="0" Content="テスト1" Click="Button_Click"/>
-        <Button Grid.Row="1" Grid.Column="1" Content="テスト2" Click="Button_Click_1"/>
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            <CheckBox Name="cbSecurity" Content="フルアクセスあり"/>
+            <Button Content="Mutex作成" Click="Button_Click" Height="120"/>
+        </StackPanel>
+        <Button Grid.Row="1" Grid.Column="1" Content="MutexをWaitOne" Click="Button_Click_1"/>
+        <Button Grid.Row="1" Grid.Column="2" Content="MutexをRelease" Click="Button_Click_2"/>
 
-        <ListBox Grid.Row="0" Grid.Column="1"
+        <ListBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
                  ItemsSource="{Binding Logs, ElementName=root}"/>
 
     </Grid>

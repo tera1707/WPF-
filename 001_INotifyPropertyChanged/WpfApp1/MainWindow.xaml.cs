@@ -26,5 +26,13 @@ namespace WpfApp1
 
             this.DataContext = new ViewModel();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ViewModel vm)
+            {
+                vm.MyValue = !vm.MyValue;
+            }
+        }
     }
 }

@@ -11,10 +11,11 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
+//using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Windows.Devices.Enumeration;
+using Windows.Graphics.Imaging;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
 using Windows.Storage;
@@ -116,56 +117,59 @@ namespace WpfApp48
 
                 AddLog("表示");
                 // 画面に表示
-                var a = System.Windows.Media.Imaging.BitmapFrame.Create(stream, System.Windows.Media.Imaging.BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                var a = System.Windows.Media.Imaging.BitmapFrame.Create(stream, System.Windows.Media.Imaging.BitmapCreateOptions.None, System.Windows.Media.Imaging.BitmapCacheOption.OnLoad);
                 PreviewFrameImage.Source = a;
 
-
-
-                //var lowLagCapture = await mediaCapture.PrepareLowLagPhotoCaptureAsync(ImageEncodingProperties.CreateUncompressed(MediaPixelFormat.Bgra8));
-
-                //var capturedPhoto = await lowLagCapture.CaptureAsync();
-                //var softwareBitmap = capturedPhoto.Frame.SoftwareBitmap;
-
-                //await lowLagCapture.FinishAsync();
-
-                //SoftwareBitmap frameBitmap = softwareBitmap;
-
-
-
-
-
-                //System.Windows.Media.Imaging.WriteableBitmap bitmap = new WriteableBitmap(frameBitmap.PixelWidth, frameBitmap.PixelHeight);
-
-                //frameBitmap.CopyToBuffer(bitmap.PixelBuffer);
-
-                //Debug.WriteLine("done");
-
-
-
-                //Windows.Graphics.Imaging.BitmapEncoder encoder = await Windows.Graphics.Imaging.BitmapEncoder.CreateAsync(Windows.Graphics.Imaging.BitmapEncoder.JpegEncoderId, captureStream);
-                ////encoder.SetPixelData(BitmapPixelFormat.Rgba8, BitmapAlphaMode.Ignore, (uint)MyImage.ActualWidth, (uint)MyImage.ActualHeight, 96.0, 96.0, data);
-
-                //await encoder.FlushAsync();
-                //var bitmapImage = new Windows.UI.Xaml.Media.Imaging.BitmapImage();
-                //bitmapImage.SetSource(captureStream);
-                //MyImage.Source = bitmapImage;
-
-
-
-                //using (var stream = new Windows.Storage.Streams.InMemoryRandomAccessStream())
-                //{
-                //    var encoder = await Windows.Graphics.Imaging.BitmapEncoder.CreateAsync(Windows.Graphics.Imaging.BitmapEncoder.PngEncoderId, stream);
-                //    encoder.SetSoftwareBitmap(softwareBitmap);
-                //    await encoder.FlushAsync();
-                //    var bmp = new System.Drawing.Bitmap(stream.AsStream());
-                //}
             }
 
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private async void Button_Click_2(object sender, RoutedEventArgs e)
         {
+            AddLog("開始");
+            var lowLagCapture = await mediaCapture.PrepareLowLagPhotoCaptureAsync(ImageEncodingProperties.CreateUncompressed(MediaPixelFormat.Bgra8));
 
+            var capturedPhoto = await lowLagCapture.CaptureAsync();
+            var softwareBitmap = capturedPhoto.Frame.SoftwareBitmap;
+
+            await lowLagCapture.FinishAsync();
+
+
+            using (IRandomAccessStream stream = new InMemoryRandomAccessStream())
+            {
+                // Create the decoder from the stream
+                BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+
+                // Get the SoftwareBitmap representation of the file
+                softwareBitmap = await decoder.GetSoftwareBitmapAsync();
+
+
+                // Create an encoder with the desired format
+                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, stream);
+
+                // Set the software bitmap
+                encoder.SetSoftwareBitmap(softwareBitmap);
+
+                await encoder.FlushAsync();
+
+
+
+
+
+
+                //ビットマップにして表示
+                System.IO.Stream stream2 = System.IO.WindowsRuntimeStreamExtensions.AsStream(stream);
+                var img = System.Drawing.Bitmap.FromStream(stream2);
+                //this.pictureBox1.Image = img;
+                //img.Save(Environment.SpecialFolder.Desktop + @"\aaa.bmp");
+
+                AddLog("表示");
+                // 画面に表示
+                var a = System.Windows.Media.Imaging.BitmapFrame.Create(stream2, System.Windows.Media.Imaging.BitmapCreateOptions.None, System.Windows.Media.Imaging.BitmapCacheOption.OnLoad);
+                PreviewFrameImage.Source = a;
+            }
+
+            AddLog("修了");
         }
     }
 }

@@ -20,6 +20,4 @@
 int main()
 {
 	Test_MyApi();
-	Test_MyApi2(L"あああ", L"いいい");
-	Test_MyApi3(2);
 }

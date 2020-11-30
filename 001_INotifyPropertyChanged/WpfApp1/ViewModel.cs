@@ -9,7 +9,7 @@ namespace WpfApp1
 {
     class ViewModel : BindingBase
     {
-        public int MyValue
+        public bool MyValue
         {
             get
             {
@@ -24,7 +24,7 @@ namespace WpfApp1
                 }
             }
         }
-        private int _myValue = 123;
+        private bool _myValue = false;
 
 
 

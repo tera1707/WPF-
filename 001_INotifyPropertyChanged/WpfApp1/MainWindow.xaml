@@ -7,8 +7,20 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Height="72" Margin="56,123,0,0" VerticalAlignment="Top" Width="84"/>
-        <TextBox Text="{Binding MyValue}" HorizontalAlignment="Left" Height="26" Margin="35,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="137"/>
+        <Button Content="Button" HorizontalAlignment="Left" Click="Button_Click"/>
+
+
+        <Ellipse Grid.Column="1" StrokeThickness="5" Stroke="Black">
+            <Ellipse.Style>
+                <Style TargetType="Ellipse">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding MyValue}" Value="true">
+                            <Setter Property="Fill" Value="Blue"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Ellipse.Style>
+        </Ellipse>
 
     </Grid>
 </Window>
