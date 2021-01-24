@@ -11,10 +11,6 @@
 #endif
 
 // エクスポート関数のプロトタイプ宣言
-VC_DLL_EXPORTS void __cdecl Test_MyApi();
-VC_DLL_EXPORTS void __cdecl Test_MyApi2(const wchar_t* lpText, const wchar_t* lpCaption);
-VC_DLL_EXPORTS void __cdecl Test_MyApi3(int count);
-VC_DLL_EXPORTS int __cdecl Test_MyApiAdd(int p1, int p2);
-VC_DLL_EXPORTS int __cdecl Test_MyApiSub(int p1, int p2);
-VC_DLL_EXPORTS void __cdecl Test_MyApiPointerCopy(wchar_t* p_in, wchar_t** p_out);
+VC_DLL_EXPORTS int __cdecl Test_MyApi();
+
 
