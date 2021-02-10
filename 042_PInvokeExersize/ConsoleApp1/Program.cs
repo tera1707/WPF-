@@ -7,7 +7,9 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            int ctr = 0;
+            ////////////////////////////
+            // C++のDLLから文字列を受け取る
+            ////////////////////////////
             string buf = null;
             NativeMethod.Test_MyApi2(out buf);
             Console.WriteLine(buf);
